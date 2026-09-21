@@ -1,5 +1,5 @@
 const $=s=>document.querySelector(s), API=FB.url+"/functions/v1/admin-api"; let DATA=null;
-function session(){try{return JSON.parse(localStorage.getItem("fb_session")||"null")}catch{return null}}
+function session(){const access_token=localStorage.getItem("fb_access_token"),refresh_token=localStorage.getItem("fb_refresh_token");return access_token?{access_token,refresh_token}:null}
 async function call(method="GET",body){let s=session();if(!s?.access_token){location="login.html";return}let r=await fetch(API,{method,headers:{apikey:FB.key,Authorization:"Bearer "+s.access_token,"Content-Type":"application/json"},body:body?JSON.stringify(body):undefined});if(r.status===401){s=await fbSession.refresh();if(s)return call(method,body)}if(r.status===403){$("#msg").textContent="Acesso negado: esta conta não é administradora.";throw 0}let j=await r.json();if(!r.ok)throw Error(j.error||"Erro");return j}
 function license(uid){return (DATA.licenses||[]).find(x=>x.user_id===uid)}
 function device(lid){return (DATA.devices||[]).find(x=>x.license_id===lid)}
