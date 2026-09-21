@@ -1,0 +1,59 @@
+name: Gerar FIRE BLAZE Mult Setup
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Release que contem o ZIP do Mult"
+        required: true
+        default: "v1.0.0"
+      source_zip:
+        description: "Nome exato do ZIP aprovado"
+        required: true
+        default: "FIRE-BLAZE-Mult-V1.0.0-ATUALIZACAO-AUDIO-V7-Portable.zip"
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - name: Baixar projeto
+        uses: actions/checkout@v4
+
+      - name: Baixar Mult aprovado do Release
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release download "${{ inputs.tag }}" --pattern "${{ inputs.source_zip }}" --dir build
+          Expand-Archive -LiteralPath "build\${{ inputs.source_zip }}" -DestinationPath "installer\payload" -Force
+
+      - name: Instalar NSIS
+        shell: pwsh
+        run: choco install nsis -y --no-progress
+
+      - name: Localizar executavel principal
+        shell: pwsh
+        run: |
+          $exe = Get-ChildItem "installer\payload" -Recurse -Filter "FIRE BLAZE Mult.exe" | Select-Object -First 1
+          if (-not $exe) { throw "FIRE BLAZE Mult.exe nao encontrado no ZIP." }
+          if ($exe.DirectoryName -ne (Resolve-Path "installer\payload").Path) {
+            Get-ChildItem $exe.DirectoryName -Force | Move-Item -Destination "installer\payload" -Force
+          }
+
+      - name: Compilar Setup
+        shell: pwsh
+        run: |
+          Set-Location installer
+          & "C:\Program Files (x86)\NSIS\makensis.exe" "fire-blaze-mult.nsi"
+          if (-not (Test-Path "FIRE-BLAZE-Mult-Setup.exe")) { throw "Setup nao foi gerado." }
+
+      - name: Publicar artefato
+        uses: actions/upload-artifact@v4
+        with:
+          name: FIRE-BLAZE-Mult-Setup
+          path: installer/FIRE-BLAZE-Mult-Setup.exe
+          if-no-files-found: error
+          retention-days: 30
