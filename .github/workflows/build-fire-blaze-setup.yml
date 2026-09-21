@@ -2,15 +2,6 @@ name: Gerar FIRE BLAZE Mult Setup
 
 on:
   workflow_dispatch:
-    inputs:
-      tag:
-        description: "Release que contem o ZIP do Mult"
-        required: true
-        default: "v1.0.0"
-      source_zip:
-        description: "Nome exato do ZIP aprovado"
-        required: true
-        default: "FIRE-BLAZE-Mult-V1.0.0-ATUALIZACAO-AUDIO-V7-Portable.zip"
 
 permissions:
   contents: read
@@ -22,13 +13,14 @@ jobs:
       - name: Baixar projeto
         uses: actions/checkout@v4
 
-      - name: Baixar Mult aprovado do Release
+      - name: Baixar Mult V1.0.0 aprovado
         shell: pwsh
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          gh release download "${{ inputs.tag }}" --pattern "${{ inputs.source_zip }}" --dir build
-          Expand-Archive -LiteralPath "build\${{ inputs.source_zip }}" -DestinationPath "installer\payload" -Force
+          New-Item -ItemType Directory -Force -Path build | Out-Null
+          gh release download "v1.0.0" --pattern "FIRE-BLAZE-Mult-V1.0.0-ATUALIZACAO-AUDIO-V7-Portable.zip" --dir build
+          Expand-Archive -LiteralPath "build\FIRE-BLAZE-Mult-V1.0.0-ATUALIZACAO-AUDIO-V7-Portable.zip" -DestinationPath "installer\payload" -Force
 
       - name: Instalar NSIS
         shell: pwsh
@@ -37,10 +29,14 @@ jobs:
       - name: Localizar executavel principal
         shell: pwsh
         run: |
-          $exe = Get-ChildItem "installer\payload" -Recurse -Filter "FIRE BLAZE Mult.exe" | Select-Object -First 1
+          $root = (Resolve-Path "installer\payload").Path
+          $exe = Get-ChildItem $root -Recurse -Filter "FIRE BLAZE Mult.exe" | Select-Object -First 1
           if (-not $exe) { throw "FIRE BLAZE Mult.exe nao encontrado no ZIP." }
-          if ($exe.DirectoryName -ne (Resolve-Path "installer\payload").Path) {
-            Get-ChildItem $exe.DirectoryName -Force | Move-Item -Destination "installer\payload" -Force
+          if ($exe.DirectoryName -ne $root) {
+            $sourceDir = $exe.DirectoryName
+            Get-ChildItem $sourceDir -Force | ForEach-Object {
+              Move-Item -LiteralPath $_.FullName -Destination $root -Force
+            }
           }
 
       - name: Compilar Setup
@@ -48,6 +44,7 @@ jobs:
         run: |
           Set-Location installer
           & "C:\Program Files (x86)\NSIS\makensis.exe" "fire-blaze-mult.nsi"
+          if ($LASTEXITCODE -ne 0) { throw "NSIS retornou erro $LASTEXITCODE." }
           if (-not (Test-Path "FIRE-BLAZE-Mult-Setup.exe")) { throw "Setup nao foi gerado." }
 
       - name: Publicar artefato
