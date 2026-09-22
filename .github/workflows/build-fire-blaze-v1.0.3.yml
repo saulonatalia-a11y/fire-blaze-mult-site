@@ -1,0 +1,54 @@
+name: Gerar FIRE BLAZE Mult V1.0.3 Setup
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+      - name: Baixar projeto
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          New-Item -ItemType Directory -Force -Path build | Out-Null
+          gh release download "v1.0.3" --pattern "FIRE-BLAZE-Mult-V1.0.3-BASE-ALPHA41-2X2-FIXO-POKEDEX-V12-TESTE.zip" --dir build
+          Expand-Archive -LiteralPath "build\FIRE-BLAZE-Mult-V1.0.3-BASE-ALPHA41-2X2-FIXO-POKEDEX-V12-TESTE.zip" -DestinationPath "installer\payload" -Force
+
+      - name: Instalar NSIS
+        shell: pwsh
+        run: choco install nsis -y --no-progress
+
+      - name: Localizar executavel principal
+        shell: pwsh
+        run: |
+          $root = (Resolve-Path "installer\payload").Path
+          $exe = Get-ChildItem $root -Recurse -Filter "FIRE BLAZE Mult.exe" | Select-Object -First 1
+          if (-not $exe) { throw "FIRE BLAZE Mult.exe nao encontrado no ZIP." }
+          if ($exe.DirectoryName -ne $root) {
+            $sourceDir = $exe.DirectoryName
+            Get-ChildItem $sourceDir -Force | ForEach-Object {
+              Move-Item -LiteralPath $_.FullName -Destination $root -Force
+            }
+          }
+
+      - name: Compilar Setup
+        shell: pwsh
+        run: |
+          Set-Location installer
+          & "C:\Program Files (x86)\NSIS\makensis.exe" "fire-blaze-mult.nsi"
+          if ($LASTEXITCODE -ne 0) { throw "NSIS retornou erro $LASTEXITCODE." }
+          if (-not (Test-Path "FIRE-BLAZE-Mult-Setup.exe")) { throw "Setup nao foi gerado." }
+
+      - name: Publicar artefato
+        uses: actions/upload-artifact@v4
+        with:
+          name: FIRE-BLAZE-Mult-V1.0.3-Setup
+          path: installer/FIRE-BLAZE-Mult-Setup.exe
+          if-no-files-found: error
+          retention-days: 30
