@@ -12,3 +12,13 @@
 @media(max-width:1100px){.metrics-v2{grid-template-columns:repeat(2,1fr)}.admin-overview{grid-template-columns:1fr}.clients-head{align-items:flex-start;flex-direction:column}.client-tools{min-width:0;width:100%}}
 @media(max-width:800px){.admin-v2 .adminmain{margin-left:0}.admin-v2 .admin-sidebar{display:none}.admin-topbar{align-items:flex-start;flex-direction:column}.metrics-v2{grid-template-columns:1fr 1fr}.access-summary{grid-template-columns:1fr 1fr}}
 @media(max-width:560px){.metrics-v2{grid-template-columns:1fr}.client-tools{flex-direction:column}.client-tools select{height:42px}.admin-top-actions{width:100%;justify-content:space-between}}
+
+/* Fix layout desktop - sidebar fixa e navegacao vertical */
+.admin-v2 .admin-sidebar{display:flex!important;flex-direction:column!important;align-items:stretch!important}
+.admin-v2 .admin-sidebar .brand{display:flex!important;align-items:center!important}
+.admin-v2 .admin-sidebar nav{display:block!important;width:100%!important;margin-top:18px!important}
+.admin-v2 .admin-sidebar nav a{display:block!important;width:100%!important;box-sizing:border-box!important}
+.admin-v2 .sidebar-bottom{display:block!important;width:100%!important;margin-top:auto!important}
+.admin-v2 .sidebar-bottom a{display:block!important;width:100%!important;box-sizing:border-box!important}
+.admin-v2 .adminmain{min-width:0!important}
+@media(max-width:800px){.admin-v2 .admin-sidebar{display:none!important}}
