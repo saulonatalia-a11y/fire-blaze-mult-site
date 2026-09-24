@@ -44,3 +44,10 @@
 .admin-v2 .admin-topbar h1{position:static!important;margin:0 0 5px!important;padding:0!important;line-height:1.1!important}
 .admin-v2 .admin-topbar p{position:static!important;margin:0!important;padding:0!important}
 .admin-v2 .admin-top-actions{position:static!important;margin:0!important;padding:0!important}
+
+/* Clientes V2 */
+.admin-v2 .client-row td{vertical-align:middle;padding-top:18px;padding-bottom:18px}
+.client-identity{display:flex;align-items:center;gap:11px;min-width:260px}.client-identity>div{min-width:0}.client-identity b{display:block;overflow:hidden;text-overflow:ellipsis}.client-identity small,.device-cell small{display:block;color:#6f6377;font-size:9px;margin-top:5px;font-weight:500}.presence-dot{width:10px;height:10px;border-radius:50%;flex:0 0 auto;box-shadow:0 0 0 4px #ffffff08}.presence-dot.pending{background:#77717b}.presence-dot.online{background:#55e85a;box-shadow:0 0 9px #55e85a}.presence-dot.offline{background:#f05262;box-shadow:0 0 7px #f0526266}
+.status-chip{font-weight:900;letter-spacing:.5px}.status-chip.active{color:#79ef76;border-color:#28512e;background:#0b160e}.status-chip.lifetime{color:#d887ff;border-color:#5c2b72;background:#1a0d21}.status-chip.monthly{color:#7fcaff;border-color:#28506b;background:#0b1319}.status-chip.temporary{color:#ffd56d;border-color:#665426;background:#19150a}.status-chip.inactive{color:#958b9b;border-color:#3b3540;background:#100d12}
+.device-cell b{font-size:12px}.adminActions .ghost{transition:.15s ease}.adminActions .ghost:hover{transform:translateY(-1px);border-color:#c75cff!important}.adminActions [data-action="delete_user"]{border-color:#673047!important}.adminActions [data-action="block"]{border-color:#69402f!important}
+.admin-v2 .admin-table{overflow-x:auto}.admin-v2 .admin-table table{min-width:1180px}
