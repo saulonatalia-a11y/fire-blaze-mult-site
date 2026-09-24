@@ -22,3 +22,25 @@
 .admin-v2 .sidebar-bottom a{display:block!important;width:100%!important;box-sizing:border-box!important}
 .admin-v2 .adminmain{min-width:0!important}
 @media(max-width:800px){.admin-v2 .admin-sidebar{display:none!important}}
+
+/* Fix header Admin V2: neutraliza estilos globais do header do site */
+.admin-v2 .admin-topbar{
+  position:static!important;
+  inset:auto!important;
+  width:auto!important;
+  height:auto!important;
+  min-height:0!important;
+  margin:0!important;
+  padding:0 0 22px!important;
+  background:transparent!important;
+  border:0!important;
+  border-bottom:1px solid #2b1e32!important;
+  box-shadow:none!important;
+  backdrop-filter:none!important;
+  transform:none!important;
+}
+.admin-v2 .admin-topbar>div:first-child{display:block!important;position:static!important;margin:0!important;padding:0!important}
+.admin-v2 .admin-topbar .eyebrow{position:static!important;margin:0 0 8px!important;padding:0!important}
+.admin-v2 .admin-topbar h1{position:static!important;margin:0 0 5px!important;padding:0!important;line-height:1.1!important}
+.admin-v2 .admin-topbar p{position:static!important;margin:0!important;padding:0!important}
+.admin-v2 .admin-top-actions{position:static!important;margin:0!important;padding:0!important}
