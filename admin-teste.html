@@ -11,7 +11,7 @@
   <b class="admintitle">CENTRAL ADMIN</b>
   <nav>
     <a class="active">▦ Visão geral</a>
-    <a href="#clientes">♙ Clientes</a>
+    <a href="#clientes" onclick="document.getElementById('clientes').scrollIntoView({behavior:'smooth'});return false">♙ Clientes</a>
     <a href="#comercial">◇ Comercial</a>
     <a href="#avisos">◉ Notificações</a>
   </nav>
@@ -50,7 +50,7 @@
   </section>
   <section id="adminNotifications" class="admin-notifications"></section>
 
-  <section id="clientes" class="clients-head admin-card">
+  <section id="clientes" class="clients-head admin-card" style="scroll-margin-top:24px">
     <div><div class="section-kicker">GESTÃO</div><h2>Clientes e licenças</h2><p>Os controles existentes foram preservados.</p></div>
     <div class="client-tools"><input id="search" placeholder="Pesquisar e-mail..."><select id="statusFilter"><option value="all">Todos os status</option><option value="active">Ativos</option><option value="lifetime">Vitalícios</option><option value="monthly">Mensais</option><option value="temporary">Temporários</option><option value="blocked">Bloqueados / vencidos</option></select></div>
   </section>
