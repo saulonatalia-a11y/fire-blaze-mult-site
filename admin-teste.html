@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Admin • FIRE BLAZE</title>
+<link rel="stylesheet" href="styles.css"><link rel="stylesheet" href="app.css"><link rel="stylesheet" href="admin-teste.css">
+</head>
+<body class="admin-v2">
+<aside class="sidebar admin-sidebar">
+  <div class="brand"><div class="mark">FB</div><b>FIRE BLAZE</b></div>
+  <b class="admintitle">CENTRAL ADMIN</b>
+  <nav>
+    <a class="active">▦ Visão geral</a>
+    <a href="#clientes">♙ Clientes</a>
+    <a href="#comercial">◇ Comercial</a>
+    <a href="#avisos">◉ Notificações</a>
+  </nav>
+  <div class="sidebar-bottom"><a href="cliente.html">Minha conta</a><a href="index.html">Abrir site ↗</a></div>
+</aside>
+<main class="adminmain">
+  <header class="admin-topbar">
+    <div><div class="eyebrow">FIRE BLAZE • ADMINISTRAÇÃO</div><h1>Visão geral</h1><p>Acompanhe clientes, planos e licenças em um só lugar.</p></div>
+    <div class="admin-top-actions"><span class="system-online"><i></i>Sistema online</span><button id="logout" class="ghost mini">Sair</button></div>
+  </header>
+
+  <div id="msg" class="notice admin-notice">Carregando dados do painel...</div>
+
+  <section class="metrics metrics-v2">
+    <article class="metric-card"><div class="metric-icon">👥</div><div><small>TOTAL DE CLIENTES</small><strong id="mUsers">—</strong><span>contas cadastradas</span></div></article>
+    <article class="metric-card"><div class="metric-icon">●</div><div><small>LICENÇAS ATIVAS</small><strong id="mActive">—</strong><span>com acesso liberado</span></div></article>
+    <article class="metric-card"><div class="metric-icon">∞</div><div><small>CLIENTES VITALÍCIOS</small><strong id="mLifetimeClients">—</strong><span>plano permanente</span></div></article>
+    <article class="metric-card"><div class="metric-icon">30</div><div><small>CLIENTES MENSAIS</small><strong id="mMonthlyClients">—</strong><span>plano mensal</span></div></article>
+    <article class="metric-card"><div class="metric-icon">⏱</div><div><small>EM TESTE / TEMPORÁRIO</small><strong id="mTrial">—</strong><span>acesso com tempo definido</span></div></article>
+    <article class="metric-card"><div class="metric-icon">×</div><div><small>BLOQUEADOS / VENCIDOS</small><strong id="mBlocked">—</strong><span>sem acesso ativo</span></div></article>
+  </section>
+
+  <section class="admin-overview">
+    <article class="overview-card"><div class="section-title"><div><small>RESUMO DE ACESSOS</small><h2>Situação das licenças</h2></div><span class="live-dot">AO VIVO</span></div><div class="access-summary"><div><span>Ativos</span><b id="sActive">—</b></div><div><span>Vitalícios</span><b id="sLifetime">—</b></div><div><span>Mensais</span><b id="sMonthly">—</b></div><div><span>Temporários</span><b id="sTrial">—</b></div></div></article>
+    <article class="overview-card"><small>PREÇOS ATUAIS</small><h2>Planos comerciais</h2><div class="price-summary"><div><span>30 dias</span><b id="mMonthly">R$ —</b></div><div><span>Vitalício</span><b id="mLifetime">R$ —</b></div></div></article>
+  </section>
+
+  <section id="comercial" class="adminpanel pricepanel admin-card">
+    <div><div class="section-kicker">COMERCIAL</div><h2>Preços da página de vendas</h2><p>Altere somente os valores exibidos no site.</p></div>
+    <div class="priceEditor"><label>30 dias<input id="priceMonthly" type="number" min="0.01" step="0.01"></label><label>Vitalício<input id="priceLifetime" type="number" min="0.01" step="0.01"></label><button id="savePrices" class="btn mini">SALVAR PREÇOS</button></div>
+  </section>
+
+  <section id="avisos" class="adminpanel notification-admin admin-card">
+    <div><div class="section-kicker">COMUNICAÇÃO</div><h2>Notificações para clientes</h2><p>Envie um aviso para a área da conta dos clientes.</p></div>
+    <div class="notification-editor"><input id="notificationTitle" maxlength="80" placeholder="Título da notificação"><textarea id="notificationMessage" maxlength="500" placeholder="Mensagem para os clientes"></textarea><button id="sendNotification" class="btn mini">ENVIAR NOTIFICAÇÃO</button></div>
+  </section>
+  <section id="adminNotifications" class="admin-notifications"></section>
+
+  <section id="clientes" class="clients-head admin-card">
+    <div><div class="section-kicker">GESTÃO</div><h2>Clientes e licenças</h2><p>Os controles existentes foram preservados.</p></div>
+    <div class="client-tools"><input id="search" placeholder="Pesquisar e-mail..."><select id="statusFilter"><option value="all">Todos os status</option><option value="active">Ativos</option><option value="lifetime">Vitalícios</option><option value="monthly">Mensais</option><option value="temporary">Temporários</option><option value="blocked">Bloqueados / vencidos</option></select></div>
+  </section>
+
+  <section class="tablewrap admin-table"><table><thead><tr><th>Cliente</th><th>Plano / acesso</th><th>Status</th><th>Dispositivo</th><th>Ações</th></tr></thead><tbody id="rows"><tr><td colspan="5" class="empty">Carregando...</td></tr></tbody></table></section>
+</main>
+<script src="config.js"></script><script src="admin-teste.js"></script>
+</body></html>
