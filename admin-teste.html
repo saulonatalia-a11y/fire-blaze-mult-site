@@ -14,6 +14,7 @@
     <a href="#clientes" onclick="document.getElementById('clientes').scrollIntoView({behavior:'smooth'});return false">♙ Clientes</a>
     <a href="#comercial">◇ Comercial</a>
     <a href="#avisos">◉ Notificações</a>
+    <a href="#downloads">↓ Downloads</a>
   </nav>
   <div class="sidebar-bottom"><a href="cliente.html">Minha conta</a><a href="index.html">Abrir site ↗</a></div>
 </aside>
@@ -49,6 +50,13 @@
     <div class="notification-editor"><input id="notificationTitle" maxlength="80" placeholder="Título da notificação"><textarea id="notificationMessage" maxlength="500" placeholder="Mensagem para os clientes"></textarea><button id="sendNotification" class="btn mini">ENVIAR NOTIFICAÇÃO</button></div>
   </section>
   <section id="adminNotifications" class="admin-notifications"></section>
+
+  <section id="downloads" class="adminpanel admin-card download-manager" style="scroll-margin-top:24px">
+    <div><div class="section-kicker">VERSÕES DO MULT</div><h2>Publicação de downloads</h2><p>Cadastre a versão e o link do instalador. As versões antigas continuam disponíveis para os clientes.</p></div>
+    <div class="download-editor"><label>Versão<input id="releaseVersion" placeholder="Ex.: 1.0.4"></label><label>Data<input id="releaseDate" placeholder="Ex.: 24/09/2026"></label><label>Link do instalador<input id="releaseUrl" type="url" placeholder="Cole aqui o link do arquivo .exe"></label><label>Observação<input id="releaseNote" maxlength="80" placeholder="Ex.: Correções e melhorias"></label><button id="prepareRelease" class="btn mini">PREPARAR PUBLICAÇÃO</button></div>
+    <div id="releaseHelp" class="release-help">Por segurança, esta tela de teste ainda não altera o servidor. Ela prepara os dados da nova versão sem mexer nas licenças ou clientes.</div>
+    <div id="adminVersionList" class="admin-version-list"></div>
+  </section>
 
   <section id="clientes" class="clients-head admin-card" style="scroll-margin-top:24px">
     <div><div class="section-kicker">GESTÃO</div><h2>Clientes e licenças</h2><p>Os controles existentes foram preservados.</p></div>
