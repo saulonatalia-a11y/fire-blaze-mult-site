@@ -11,3 +11,5 @@ body>header nav>a:not(.whatsapp-top){display:inline-flex!important;align-items:c
 body>header nav button{margin:0!important}
 .client-v2{padding-top:34px!important}
 @media(max-width:600px){body>header{height:auto!important;min-height:68px!important;padding:10px 15px!important;gap:10px!important}body>header nav{margin-left:auto!important}.client-v2{padding-top:24px!important}}
+
+.video-frame video{position:absolute;inset:0;width:100%;height:100%;border:0;background:#000;object-fit:contain}
