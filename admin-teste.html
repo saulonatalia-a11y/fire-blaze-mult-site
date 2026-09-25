@@ -13,7 +13,6 @@
     <a class="active">▦ Visão geral</a>
     <a href="#clientes" onclick="document.getElementById('clientes').scrollIntoView({behavior:'smooth'});return false">♙ Clientes</a>
     <a href="#comercial">◇ Comercial</a>
-    <a href="#avisos">◉ Notificações</a>
     <a href="#downloads">↓ Downloads</a>
   </nav>
   <div class="sidebar-bottom"><a href="cliente.html">Minha conta</a><a href="index.html">Abrir site ↗</a></div>
@@ -36,7 +35,7 @@
   </section>
 
   <section class="admin-overview">
-    <article class="overview-card"><div class="section-title"><div><small>RESUMO DE ACESSOS</small><h2>Situação das licenças</h2></div><span class="live-dot">AO VIVO</span></div><div class="access-summary"><div><span>Ativos</span><b id="sActive">—</b></div><div><span>Vitalícios</span><b id="sLifetime">—</b></div><div><span>Mensais</span><b id="sMonthly">—</b></div><div><span>Temporários</span><b id="sTrial">—</b></div></div></article>
+    <article class="overview-card"><div class="section-title"><div><small>RESUMO DE ACESSOS</small><h2>Situação das licenças</h2></div><span class="live-dot">LICENÇAS</span></div><div class="access-summary"><div><span>Ativos</span><b id="sActive">—</b></div><div><span>Vitalícios</span><b id="sLifetime">—</b></div><div><span>Mensais</span><b id="sMonthly">—</b></div><div><span>Temporários</span><b id="sTrial">—</b></div></div></article>
     <article class="overview-card"><small>PREÇOS ATUAIS</small><h2>Planos comerciais</h2><div class="price-summary"><div><span>30 dias</span><b id="mMonthly">R$ —</b></div><div><span>Vitalício</span><b id="mLifetime">R$ —</b></div></div></article>
   </section>
 
@@ -44,12 +43,6 @@
     <div><div class="section-kicker">COMERCIAL</div><h2>Preços da página de vendas</h2><p>Altere somente os valores exibidos no site.</p></div>
     <div class="priceEditor"><label>30 dias<input id="priceMonthly" type="number" min="0.01" step="0.01"></label><label>Vitalício<input id="priceLifetime" type="number" min="0.01" step="0.01"></label><button id="savePrices" class="btn mini">SALVAR PREÇOS</button></div>
   </section>
-
-  <section id="avisos" class="adminpanel notification-admin admin-card">
-    <div><div class="section-kicker">COMUNICAÇÃO</div><h2>Notificações para clientes</h2><p>Envie um aviso para a área da conta dos clientes.</p></div>
-    <div class="notification-editor"><select id="notificationType"><option value="simple">Aviso simples • botão OK</option><option value="update">Atualização • Baixar agora / Depois</option></select><input id="notificationTitle" maxlength="80" placeholder="Título da notificação"><textarea id="notificationMessage" maxlength="500" placeholder="Mensagem para os clientes"></textarea><button id="sendNotification" class="btn mini">ENVIAR NOTIFICAÇÃO</button></div>
-  </section>
-  <section id="adminNotifications" class="admin-notifications"></section>
 
   <section id="downloads" class="adminpanel admin-card download-manager" style="scroll-margin-top:24px">
     <div class="download-heading"><div><div class="section-kicker">VERSÕES DO MULT</div><h2>Publicação de downloads</h2><p>Cadastre uma nova versão sem apagar as anteriores.</p></div></div>
