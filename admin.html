@@ -14,6 +14,7 @@
     <a href="#clientes" onclick="document.getElementById('clientes').scrollIntoView({behavior:'smooth'});return false">♙ Clientes</a>
     <a href="#comercial">◇ Comercial</a>
     <a href="#downloads">↓ Downloads</a>
+    <a href="#videoaulas">▶ Videoaulas</a>
   </nav>
   <div class="sidebar-bottom"><a href="cliente.html">Minha conta</a><a href="index.html">Abrir site ↗</a></div>
 </aside>
@@ -50,6 +51,13 @@
     <div id="releaseHelp" class="release-help">Esta tela de teste prepara a nova versão sem alterar clientes ou licenças.</div>
     <div class="versions-admin-head"><div><div class="section-kicker">HISTÓRICO</div><h3>Versões disponíveis</h3></div><span>Arraste a barra para ver mais →</span></div>
     <div id="adminVersionList" class="admin-version-list"></div>
+  </section>
+
+  <section id="videoaulas" class="adminpanel admin-card tutorial-admin" style="scroll-margin-top:24px">
+    <div><div class="section-kicker">CENTRAL DE APRENDIZADO</div><h2>Videoaulas dos clientes</h2><p>Cadastre o título, o link do YouTube e uma descrição da aula.</p></div>
+    <div class="tutorial-admin-form"><label>Título da aula<input id="tutorialAdminTitle" placeholder="Ex.: Como configurar o FIRE BLAZE Mult"></label><label>Link do YouTube<input id="tutorialAdminUrl" type="url" placeholder="Cole aqui o link do vídeo"></label><label>Descrição<input id="tutorialAdminDescription" placeholder="Ex.: Configuração inicial passo a passo"></label><button id="tutorialAdminAdd" class="btn mini">ADICIONAR AULA</button></div>
+    <div id="tutorialAdminMsg" class="release-help">As aulas publicadas aparecem na Central de Aprendizado da área do cliente.</div>
+    <div id="tutorialAdminList" class="tutorial-admin-list"></div>
   </section>
 
   <section id="clientes" class="clients-head admin-card" style="scroll-margin-top:24px">
