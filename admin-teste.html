@@ -52,9 +52,10 @@
   <section id="adminNotifications" class="admin-notifications"></section>
 
   <section id="downloads" class="adminpanel admin-card download-manager" style="scroll-margin-top:24px">
-    <div><div class="section-kicker">VERSÕES DO MULT</div><h2>Publicação de downloads</h2><p>Cadastre a versão e o link do instalador. As versões antigas continuam disponíveis para os clientes.</p></div>
+    <div class="download-heading"><div><div class="section-kicker">VERSÕES DO MULT</div><h2>Publicação de downloads</h2><p>Cadastre uma nova versão sem apagar as anteriores.</p></div></div>
     <div class="download-editor"><label>Versão<input id="releaseVersion" placeholder="Ex.: 1.0.4"></label><label>Data<input id="releaseDate" placeholder="Ex.: 24/09/2026"></label><label>Link do instalador<input id="releaseUrl" type="url" placeholder="Cole aqui o link do arquivo .exe"></label><label>Observação<input id="releaseNote" maxlength="80" placeholder="Ex.: Correções e melhorias"></label><button id="prepareRelease" class="btn mini">PREPARAR PUBLICAÇÃO</button></div>
-    <div id="releaseHelp" class="release-help">Por segurança, esta tela de teste ainda não altera o servidor. Ela prepara os dados da nova versão sem mexer nas licenças ou clientes.</div>
+    <div id="releaseHelp" class="release-help">Esta tela de teste prepara a nova versão sem alterar clientes ou licenças.</div>
+    <div class="versions-admin-head"><div><div class="section-kicker">HISTÓRICO</div><h3>Versões disponíveis</h3></div><span>Arraste a barra para ver mais →</span></div>
     <div id="adminVersionList" class="admin-version-list"></div>
   </section>
 
