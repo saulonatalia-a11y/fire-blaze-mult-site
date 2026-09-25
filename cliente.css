@@ -13,3 +13,12 @@ body>header nav button{margin:0!important}
 @media(max-width:600px){body>header{height:auto!important;min-height:68px!important;padding:10px 15px!important;gap:10px!important}body>header nav{margin-left:auto!important}.client-v2{padding-top:24px!important}}
 
 .video-frame video{position:absolute;inset:0;width:100%;height:100%;border:0;background:#000;object-fit:contain}
+
+/* Card da videoaula: abre o YouTube em nova aba */
+.tutorial-youtube-card{position:relative;display:block;max-width:760px;aspect-ratio:16/9;margin-top:18px;overflow:hidden;border:1px solid #55336d;border-radius:16px;background:#07070b;text-decoration:none;box-shadow:0 20px 50px #0007}
+.tutorial-youtube-card img{display:block;width:100%;height:100%;object-fit:cover;background:linear-gradient(135deg,#130b1c,#080b10)}
+.tutorial-youtube-card:after{content:"";position:absolute;inset:0;background:linear-gradient(transparent 55%,#050508e8)}
+.tutorial-play{position:absolute;z-index:2;left:50%;top:50%;transform:translate(-50%,-50%);display:grid;place-items:center;width:78px;height:78px;padding-left:5px;border-radius:50%;background:#8d55ff;color:#fff;font-size:31px;box-shadow:0 0 30px #8d55ff88}
+.tutorial-youtube-card strong{position:absolute;z-index:2;left:22px;bottom:18px;color:#fff;font-size:12px;letter-spacing:.8px}
+.tutorial-youtube-card:hover .tutorial-play{transform:translate(-50%,-50%) scale(1.07)}
+@media(max-width:600px){.tutorial-play{width:58px;height:58px;font-size:23px}.tutorial-youtube-card strong{left:14px;bottom:12px;font-size:10px}}
