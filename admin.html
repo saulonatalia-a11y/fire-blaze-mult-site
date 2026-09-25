@@ -54,14 +54,14 @@
   </section>
 
   <section id="videoaulas" class="adminpanel admin-card tutorial-admin tutorial-admin-v3" style="scroll-margin-top:24px">
-    <div class="tutorial-v3-head"><div><div class="section-kicker">CENTRAL DE APRENDIZADO</div><h2>Videoaulas dos clientes</h2><p>Cadastre e organize as aulas exibidas na área do cliente.</p></div></div>
+    <div class="tutorial-v3-head"><div><div class="section-kicker">CENTRAL DE APRENDIZADO</div><h2>Videoaulas dos clientes</h2><p>Envie um vídeo MP4/WebM para ser assistido dentro da área do cliente.</p></div></div>
     <div class="tutorial-v3-form">
       <label>Título da aula<input id="tutorialAdminTitle" placeholder="Ex.: Primeiros passos no FIRE BLAZE"></label>
-      <label>Link do YouTube<input id="tutorialAdminUrl" type="url" placeholder="Cole o link do vídeo"></label>
+      <label>Arquivo do vídeo<input id="tutorialAdminVideo" type="file" accept="video/mp4,video/webm"></label>
       <label>Descrição<input id="tutorialAdminDescription" placeholder="Ex.: Configuração inicial passo a passo"></label>
       <button id="tutorialAdminAdd" class="btn">PUBLICAR AULA</button>
     </div>
-    <div id="tutorialAdminMsg" class="tutorial-v3-msg">As aulas publicadas aparecerão na área do cliente.</div>
+    <div id="tutorialAdminMsg" class="tutorial-v3-msg">O vídeo publicado aparecerá no player dentro da área do cliente.</div>
     <div class="tutorial-v3-history"><div><div class="section-kicker">AULAS PUBLICADAS</div><h3>Central de Aprendizado</h3></div><span>Arraste para ver mais →</span></div>
     <div id="tutorialAdminList" class="tutorial-admin-list tutorial-v3-list"><article class="tutorial-admin-empty">Nenhuma aula publicada ainda.</article></div>
   </section>
