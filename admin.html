@@ -54,10 +54,16 @@
   </section>
 
   <section id="videoaulas" class="adminpanel admin-card tutorial-admin" style="scroll-margin-top:24px">
-    <div><div class="section-kicker">CENTRAL DE APRENDIZADO</div><h2>Videoaulas dos clientes</h2><p>Cadastre o título, o link do YouTube e uma descrição da aula.</p></div>
-    <div class="tutorial-admin-form"><label>Título da aula<input id="tutorialAdminTitle" placeholder="Ex.: Como configurar o FIRE BLAZE Mult"></label><label>Link do YouTube<input id="tutorialAdminUrl" type="url" placeholder="Cole aqui o link do vídeo"></label><label>Descrição<input id="tutorialAdminDescription" placeholder="Ex.: Configuração inicial passo a passo"></label><button id="tutorialAdminAdd" class="btn mini">ADICIONAR AULA</button></div>
-    <div id="tutorialAdminMsg" class="release-help">As aulas publicadas aparecem na Central de Aprendizado da área do cliente.</div>
-    <div id="tutorialAdminList" class="tutorial-admin-list"></div>
+    <div class="tutorial-admin-heading"><div><div class="section-kicker">CENTRAL DE APRENDIZADO</div><h2>Videoaulas dos clientes</h2><p>Cadastre as aulas que aparecem na área do cliente.</p></div><span class="tutorial-step">NOVA AULA</span></div>
+    <div class="tutorial-publish-card">
+      <div class="tutorial-field"><span>01</span><label>Título da aula<input id="tutorialAdminTitle" placeholder="Ex.: Primeiros passos no FIRE BLAZE"></label></div>
+      <div class="tutorial-field"><span>02</span><label>Link do YouTube<input id="tutorialAdminUrl" type="url" placeholder="Cole o link do vídeo do YouTube"></label></div>
+      <div class="tutorial-field"><span>03</span><label>Descrição<input id="tutorialAdminDescription" placeholder="Ex.: Veja como configurar e começar a usar"></label></div>
+      <button id="tutorialAdminAdd" class="btn tutorial-publish-btn">PUBLICAR AULA</button>
+    </div>
+    <div id="tutorialAdminMsg" class="release-help">As aulas publicadas aparecem abaixo em cartões, igual ao histórico de versões.</div>
+    <div class="versions-admin-head tutorial-history-head"><div><div class="section-kicker">AULAS PUBLICADAS</div><h3>Central de Aprendizado</h3></div><span>Arraste a barra para ver mais →</span></div>
+    <div id="tutorialAdminList" class="tutorial-admin-list"><article class="tutorial-admin-empty">Nenhuma aula publicada ainda.</article></div>
   </section>
 
   <section id="clientes" class="clients-head admin-card" style="scroll-margin-top:24px">
