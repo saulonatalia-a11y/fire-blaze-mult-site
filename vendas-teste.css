@@ -20,3 +20,11 @@
 .extension-images img{width:100%;height:520px;object-fit:contain;object-position:top center;background:#080b10;flex:1}
 @media(max-width:900px){.extension-images img{height:500px}}
 @media(max-width:600px){.extension-images{grid-template-columns:1fr 1fr}.extension-images img{height:330px}}
+
+/* Correção das capturas da extensão: mesma caixa, alinhamento e sem legendas */
+.extension-images{display:grid;grid-template-columns:1fr 1fr;gap:14px;align-items:start}
+.extension-images figure{margin:0;height:520px;display:flex;align-items:flex-start;justify-content:center;overflow:hidden;background:#080b10}
+.extension-images img{display:block;width:100%;height:100%;object-fit:contain;object-position:top center;background:#080b10}
+.extension-images figcaption{display:none}
+@media(max-width:900px){.extension-images figure{height:500px}}
+@media(max-width:600px){.extension-images{grid-template-columns:1fr 1fr;gap:8px}.extension-images figure{height:330px}}
