@@ -126,3 +126,6 @@
 /* Correção visual: botão de publicar vídeo */
 .admin-v2 #tutorialAdminAdd{appearance:none!important;-webkit-appearance:none!important;background:linear-gradient(100deg,#7156ff,#9c62ff)!important;color:#fff!important;border:1px solid #9d79ff!important;border-radius:9px!important;box-shadow:0 0 18px rgba(123,92,255,.2)!important;font-weight:900!important;cursor:pointer!important;text-shadow:none!important}
 .admin-v2 #tutorialAdminAdd:hover{filter:brightness(1.08)!important}
+
+.admin-v2 #tutorialAdminVideo{display:block!important;width:100%!important;height:46px!important;box-sizing:border-box!important;margin:0!important;padding:8px!important;background:#09070d!important;color:#a99daf!important;border:1px solid #362840!important;border-radius:9px!important}
+.admin-v2 #tutorialAdminVideo::file-selector-button{height:28px;margin-right:10px;padding:0 12px;border:1px solid #68427c;border-radius:7px;background:#1c1024;color:#fff;font-weight:800;cursor:pointer}
