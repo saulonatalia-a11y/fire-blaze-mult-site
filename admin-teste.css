@@ -107,3 +107,5 @@
 .admin-v2 .admin-version-item{flex:0 0 205px!important;width:205px!important;min-width:205px!important;min-height:112px!important;padding:16px!important}
 @media(max-width:1200px){.admin-v2 .download-editor{grid-template-columns:1fr 1fr!important}.admin-v2 .download-editor label:nth-child(3),.admin-v2 .download-editor label:nth-child(4){grid-column:auto!important}.admin-v2 .download-editor button{grid-column:1/-1!important}}
 @media(max-width:650px){.admin-v2 .download-manager{padding:18px!important}.admin-v2 .download-editor{grid-template-columns:1fr!important}.admin-v2 .download-editor button{grid-column:auto!important}.admin-v2 .versions-admin-head>span{display:none!important}.admin-v2 .admin-version-item{flex-basis:175px!important;width:175px!important;min-width:175px!important}}
+
+.presence-dot.online{background:#35e58a;box-shadow:0 0 0 3px rgba(53,229,138,.12),0 0 12px rgba(53,229,138,.45)}.presence-dot.offline{background:#ff5364;box-shadow:0 0 0 3px rgba(255,83,100,.10)}#notificationType{width:100%;background:#0d0913;color:#fff;border:1px solid #432653;border-radius:8px;padding:10px 12px}
