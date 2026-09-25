@@ -1,9 +1,35 @@
 {
-  "current": "1.0.3",
+  "current": "1.0.4",
   "versions": [
-    {"version":"1.0.3","date":"23/09/2026","note":"Versão atual","url":"https://github.com/saulonatalia-a11y/fire-blaze-mult-site/releases/download/v1.0.3/FIRE-BLAZE-Mult-Setup.exe"},
-    {"version":"1.0.2","date":"21/09/2026","note":"Versão anterior","url":"https://github.com/saulonatalia-a11y/fire-blaze-mult-site/releases/download/v1.0.2/FIRE-BLAZE-Mult-Setup.exe"},
-    {"version":"1.0.1","date":"21/09/2026","note":"Versão anterior","url":"https://github.com/saulonatalia-a11y/fire-blaze-mult-site/releases/download/v1.0.1/FIRE-BLAZE-Mult-Setup.exe"},
-    {"version":"1.0.0","date":"21/09/2026","note":"Versão anterior","url":"https://github.com/saulonatalia-a11y/fire-blaze-mult-site/releases/download/v1.0.0/FIRE-BLAZE-Mult-Setup.exe"}
+    {
+      "version": "1.0.4",
+      "date": "25/09/2026",
+      "note": "Versão atual",
+      "url": "https://github.com/saulonatalia-a11y/fire-blaze-mult-site/releases/download/v1.0.4/FIRE-BLAZE-Mult-Setup-V1.0.4.exe"
+    },
+    {
+      "version": "1.0.3",
+      "date": "23/09/2026",
+      "note": "Versão anterior",
+      "url": "https://github.com/saulonatalia-a11y/fire-blaze-mult-site/releases/download/v1.0.3/FIRE-BLAZE-Mult-Setup.exe"
+    },
+    {
+      "version": "1.0.2",
+      "date": "21/09/2026",
+      "note": "Versão anterior",
+      "url": "https://github.com/saulonatalia-a11y/fire-blaze-mult-site/releases/download/v1.0.2/FIRE-BLAZE-Mult-Setup.exe"
+    },
+    {
+      "version": "1.0.1",
+      "date": "21/09/2026",
+      "note": "Versão anterior",
+      "url": "https://github.com/saulonatalia-a11y/fire-blaze-mult-site/releases/download/v1.0.1/FIRE-BLAZE-Mult-Setup.exe"
+    },
+    {
+      "version": "1.0.0",
+      "date": "21/09/2026",
+      "note": "Versão anterior",
+      "url": "https://github.com/saulonatalia-a11y/fire-blaze-mult-site/releases/download/v1.0.0/FIRE-BLAZE-Mult-Setup.exe"
+    }
   ]
 }
