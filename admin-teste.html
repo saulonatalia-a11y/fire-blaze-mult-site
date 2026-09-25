@@ -47,7 +47,7 @@
 
   <section id="avisos" class="adminpanel notification-admin admin-card">
     <div><div class="section-kicker">COMUNICAÇÃO</div><h2>Notificações para clientes</h2><p>Envie um aviso para a área da conta dos clientes.</p></div>
-    <div class="notification-editor"><input id="notificationTitle" maxlength="80" placeholder="Título da notificação"><textarea id="notificationMessage" maxlength="500" placeholder="Mensagem para os clientes"></textarea><button id="sendNotification" class="btn mini">ENVIAR NOTIFICAÇÃO</button></div>
+    <div class="notification-editor"><select id="notificationType"><option value="simple">Aviso simples • botão OK</option><option value="update">Atualização • Baixar agora / Depois</option></select><input id="notificationTitle" maxlength="80" placeholder="Título da notificação"><textarea id="notificationMessage" maxlength="500" placeholder="Mensagem para os clientes"></textarea><button id="sendNotification" class="btn mini">ENVIAR NOTIFICAÇÃO</button></div>
   </section>
   <section id="adminNotifications" class="admin-notifications"></section>
 
