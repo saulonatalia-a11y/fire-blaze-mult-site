@@ -1,0 +1,115 @@
+
+/* Admin V2 - redesign visual isolado */
+.admin-v2{background:radial-gradient(circle at 80% 0,#24102d 0,transparent 28%),#08060b;color:#f7f2fa}
+.admin-v2 .admin-sidebar{width:250px;background:linear-gradient(180deg,#0e0913,#08060b);padding:28px 20px;display:flex;flex-direction:column;z-index:10}
+.admin-sidebar nav{margin-top:18px}.admin-sidebar nav a,.sidebar-bottom a{display:block;padding:12px 14px;margin:5px 0;border-radius:10px;color:#9e91a7;text-decoration:none;font-size:13px}.admin-sidebar nav a.active{background:linear-gradient(90deg,#2b1438,#17101e);color:#fff;border:1px solid #48205d}.sidebar-bottom{margin-top:auto;border-top:1px solid #241a2a;padding-top:15px}
+.admin-v2 .adminmain{margin-left:250px;padding:38px clamp(24px,4vw,58px) 60px;max-width:1700px}
+.admin-topbar{display:flex;justify-content:space-between;align-items:center;gap:20px}.admin-topbar h1{font-size:36px;margin:4px 0 2px}.admin-topbar p{margin:0;color:#8f8298}.admin-top-actions{display:flex;align-items:center;gap:12px}.system-online{font-size:11px;color:#8df28a;background:#0c1710;border:1px solid #23472a;padding:8px 11px;border-radius:20px}.system-online i{display:inline-block;width:7px;height:7px;border-radius:50%;background:#62e45f;margin-right:7px;box-shadow:0 0 10px #62e45f}
+.admin-notice{margin:24px 0 16px;background:#0e0a13;border-color:#2d2035;font-size:11px}
+.metrics-v2{grid-template-columns:repeat(3,1fr);gap:12px}.metrics-v2 .metric-card{display:flex;align-items:center;gap:16px;padding:20px;background:linear-gradient(145deg,#120d17,#0c0910);border:1px solid #2a1d31;border-radius:16px}.metric-icon{width:42px;height:42px;display:grid;place-items:center;border-radius:12px;background:#21112b;border:1px solid #4b2460;color:#d772ff;font-weight:900;font-size:13px;flex:0 0 auto}.metrics-v2 .metric-card strong{font-size:28px;line-height:1.1}
+.admin-overview{display:grid;grid-template-columns:2fr 1fr;gap:12px;margin-top:12px}.overview-card,.admin-card{background:linear-gradient(145deg,#110d16,#0c0910);border:1px solid #2b1e32;border-radius:16px;padding:22px}.section-title{display:flex;justify-content:space-between;align-items:flex-start}.overview-card h2,.admin-card h2{margin:5px 0 0;font-size:18px}.overview-card>small,.section-title small,.section-kicker{font-size:9px;letter-spacing:1.4px;color:#8c7d95}.live-dot{font-size:9px;color:#6dff68;border:1px solid #28512e;padding:5px 8px;border-radius:20px}.access-summary{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:18px}.access-summary div,.price-summary div{padding:13px;background:#09070c;border:1px solid #241a29;border-radius:10px}.access-summary span,.price-summary span{display:block;color:#817589;font-size:10px}.access-summary b,.price-summary b{display:block;font-size:18px;margin-top:4px}.price-summary{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:18px}
+.admin-v2 .adminpanel{margin-top:12px}.admin-card p{margin:6px 0 0;color:#82768a;font-size:12px}.clients-head{margin-top:12px;display:flex;align-items:center;justify-content:space-between;gap:20px}.client-tools{display:flex;gap:9px;min-width:min(540px,100%)}.client-tools input{margin:0}.client-tools select{background:#09070d;border:1px solid #362840;color:#fff;border-radius:10px;padding:0 12px;min-width:170px}.admin-table{border-radius:16px;background:#0d0911;border-color:#2b1e32}.admin-table th{background:#110c16;letter-spacing:.7px}.admin-table tr:hover td{background:#100b14}.status-chip{display:inline-flex;padding:5px 8px;border-radius:20px;font-size:9px;text-transform:uppercase;border:1px solid #3b2d42}.status-chip.ok{color:#77ef75;border-color:#28512e;background:#0b160e}.status-chip.off{color:#d0becd}
+@media(max-width:1100px){.metrics-v2{grid-template-columns:repeat(2,1fr)}.admin-overview{grid-template-columns:1fr}.clients-head{align-items:flex-start;flex-direction:column}.client-tools{min-width:0;width:100%}}
+@media(max-width:800px){.admin-v2 .adminmain{margin-left:0}.admin-v2 .admin-sidebar{display:none}.admin-topbar{align-items:flex-start;flex-direction:column}.metrics-v2{grid-template-columns:1fr 1fr}.access-summary{grid-template-columns:1fr 1fr}}
+@media(max-width:560px){.metrics-v2{grid-template-columns:1fr}.client-tools{flex-direction:column}.client-tools select{height:42px}.admin-top-actions{width:100%;justify-content:space-between}}
+
+/* Fix layout desktop - sidebar fixa e navegacao vertical */
+.admin-v2 .admin-sidebar{display:flex!important;flex-direction:column!important;align-items:stretch!important}
+.admin-v2 .admin-sidebar .brand{display:flex!important;align-items:center!important}
+.admin-v2 .admin-sidebar nav{display:block!important;width:100%!important;margin-top:18px!important}
+.admin-v2 .admin-sidebar nav a{display:block!important;width:100%!important;box-sizing:border-box!important}
+.admin-v2 .sidebar-bottom{display:block!important;width:100%!important;margin-top:auto!important}
+.admin-v2 .sidebar-bottom a{display:block!important;width:100%!important;box-sizing:border-box!important}
+.admin-v2 .adminmain{min-width:0!important}
+@media(max-width:800px){.admin-v2 .admin-sidebar{display:none!important}}
+
+/* Fix header Admin V2: neutraliza estilos globais do header do site */
+.admin-v2 .admin-topbar{
+  position:static!important;
+  inset:auto!important;
+  width:auto!important;
+  height:auto!important;
+  min-height:0!important;
+  margin:0!important;
+  padding:0 0 22px!important;
+  background:transparent!important;
+  border:0!important;
+  border-bottom:1px solid #2b1e32!important;
+  box-shadow:none!important;
+  backdrop-filter:none!important;
+  transform:none!important;
+}
+.admin-v2 .admin-topbar>div:first-child{display:block!important;position:static!important;margin:0!important;padding:0!important}
+.admin-v2 .admin-topbar .eyebrow{position:static!important;margin:0 0 8px!important;padding:0!important}
+.admin-v2 .admin-topbar h1{position:static!important;margin:0 0 5px!important;padding:0!important;line-height:1.1!important}
+.admin-v2 .admin-topbar p{position:static!important;margin:0!important;padding:0!important}
+.admin-v2 .admin-top-actions{position:static!important;margin:0!important;padding:0!important}
+
+/* Clientes V2 */
+.admin-v2 .client-row td{vertical-align:middle;padding-top:18px;padding-bottom:18px}
+.client-identity{display:flex;align-items:center;gap:11px;min-width:260px}.client-identity>div{min-width:0}.client-identity b{display:block;overflow:hidden;text-overflow:ellipsis}.client-identity small,.device-cell small{display:block;color:#6f6377;font-size:9px;margin-top:5px;font-weight:500}.presence-dot{width:10px;height:10px;border-radius:50%;flex:0 0 auto;box-shadow:0 0 0 4px #ffffff08}.presence-dot.pending{background:#77717b}.presence-dot.online{background:#55e85a;box-shadow:0 0 9px #55e85a}.presence-dot.offline{background:#f05262;box-shadow:0 0 7px #f0526266}
+.status-chip{font-weight:900;letter-spacing:.5px}.status-chip.active{color:#79ef76;border-color:#28512e;background:#0b160e}.status-chip.lifetime{color:#d887ff;border-color:#5c2b72;background:#1a0d21}.status-chip.monthly{color:#7fcaff;border-color:#28506b;background:#0b1319}.status-chip.temporary{color:#ffd56d;border-color:#665426;background:#19150a}.status-chip.inactive{color:#958b9b;border-color:#3b3540;background:#100d12}
+.device-cell b{font-size:12px}.adminActions .ghost{transition:.15s ease}.adminActions .ghost:hover{transform:translateY(-1px);border-color:#c75cff!important}.adminActions [data-action="delete_user"]{border-color:#673047!important}.adminActions [data-action="block"]{border-color:#69402f!important}
+.admin-v2 .admin-table{overflow-x:auto}.admin-v2 .admin-table table{min-width:1180px}
+
+/* Gerenciador de downloads */
+.download-manager{margin-top:12px}.download-editor{display:grid;grid-template-columns:140px 160px minmax(280px,1fr) minmax(220px,1fr) auto;gap:10px;align-items:end;margin-top:18px}.download-editor label{font-size:10px;color:#8f8298}.download-editor input{width:100%;margin-top:6px}.release-help{margin-top:12px;padding:12px;border:1px solid #302338;background:#0a080d;border-radius:10px;color:#94869d;font-size:11px}.admin-version-list{margin-top:12px;display:grid;gap:7px}.admin-version-item{display:flex;justify-content:space-between;align-items:center;padding:12px 14px;background:#09070c;border:1px solid #241a29;border-radius:10px}.admin-version-item b{display:block}.admin-version-item span:not(.status-chip){display:block;color:#776b7e;font-size:10px;margin-top:3px}@media(max-width:1200px){.download-editor{grid-template-columns:1fr 1fr}.download-editor button{min-height:42px}}@media(max-width:650px){.download-editor{grid-template-columns:1fr}}
+
+/* Histórico de versões em carrossel horizontal */
+.admin-v2 .download-manager{overflow:hidden}
+.admin-v2 .admin-version-list{
+  display:flex!important;
+  flex-direction:row!important;
+  gap:14px!important;
+  width:100%!important;
+  max-width:100%!important;
+  overflow-x:auto!important;
+  overflow-y:hidden!important;
+  padding:18px 4px 14px!important;
+  scroll-behavior:smooth;
+  scrollbar-width:auto;
+  scrollbar-color:#8d35b5 #17101d;
+}
+.admin-v2 .admin-version-list::-webkit-scrollbar{height:11px}
+.admin-v2 .admin-version-list::-webkit-scrollbar-track{background:#17101d;border-radius:20px}
+.admin-v2 .admin-version-list::-webkit-scrollbar-thumb{background:#8d35b5;border-radius:20px;border:2px solid #17101d}
+.admin-v2 .admin-version-list::-webkit-scrollbar-thumb:hover{background:#b94ce8}
+.admin-v2 .admin-version-item{
+  flex:0 0 170px!important;
+  width:170px!important;
+  min-width:170px!important;
+  min-height:105px!important;
+  box-sizing:border-box!important;
+  display:flex!important;
+  flex-direction:column!important;
+  align-items:flex-start!important;
+  justify-content:space-between!important;
+  padding:16px!important;
+  border-radius:13px!important;
+}
+.admin-v2 .admin-version-item .status-chip{align-self:flex-start;margin-top:12px}
+@media(max-width:650px){.admin-v2 .admin-version-item{flex-basis:155px!important;width:155px!important;min-width:155px!important}}
+
+/* Downloads V3 - organização em blocos */
+.admin-v2 .download-manager{display:block!important;padding:24px!important}
+.admin-v2 .download-heading{display:flex!important;align-items:flex-start!important;justify-content:space-between!important;margin-bottom:20px!important}
+.admin-v2 .download-heading h2{font-size:22px!important;margin:5px 0!important}
+.admin-v2 .download-heading p{max-width:560px!important}
+.admin-v2 .download-editor{display:grid!important;grid-template-columns:130px 150px minmax(280px,1.6fr) minmax(220px,1fr) 170px!important;gap:12px!important;align-items:end!important;width:100%!important;margin:0!important}
+.admin-v2 .download-editor label{display:flex!important;flex-direction:column!important;gap:7px!important;min-width:0!important}
+.admin-v2 .download-editor input{box-sizing:border-box!important;width:100%!important;height:46px!important;margin:0!important}
+.admin-v2 .download-editor button{height:46px!important;width:100%!important;margin:0!important}
+.admin-v2 .release-help{margin:14px 0 22px!important;width:100%!important;box-sizing:border-box!important}
+.admin-v2 .versions-admin-head{display:flex!important;justify-content:space-between!important;align-items:end!important;padding-top:18px!important;border-top:1px solid #2b1e32!important;margin-bottom:10px!important}
+.admin-v2 .versions-admin-head h3{margin:4px 0 0!important;font-size:16px!important}
+.admin-v2 .versions-admin-head>span{font-size:10px!important;color:#75687e!important}
+.admin-v2 .admin-version-list{display:flex!important;width:100%!important;max-width:none!important;box-sizing:border-box!important;gap:12px!important;overflow-x:auto!important;overflow-y:hidden!important;padding:4px 2px 14px!important;margin:0!important}
+.admin-v2 .admin-version-item{flex:0 0 205px!important;width:205px!important;min-width:205px!important;min-height:112px!important;padding:16px!important}
+@media(max-width:1200px){.admin-v2 .download-editor{grid-template-columns:1fr 1fr!important}.admin-v2 .download-editor label:nth-child(3),.admin-v2 .download-editor label:nth-child(4){grid-column:auto!important}.admin-v2 .download-editor button{grid-column:1/-1!important}}
+@media(max-width:650px){.admin-v2 .download-manager{padding:18px!important}.admin-v2 .download-editor{grid-template-columns:1fr!important}.admin-v2 .download-editor button{grid-column:auto!important}.admin-v2 .versions-admin-head>span{display:none!important}.admin-v2 .admin-version-item{flex-basis:175px!important;width:175px!important;min-width:175px!important}}
+
+.presence-dot.online{background:#35e58a;box-shadow:0 0 0 3px rgba(53,229,138,.12),0 0 12px rgba(53,229,138,.45)}.presence-dot.offline{background:#ff5364;box-shadow:0 0 0 3px rgba(255,83,100,.10)}#notificationType{width:100%;background:#0d0913;color:#fff;border:1px solid #432653;border-radius:8px;padding:10px 12px}
+
+.release-link-row{display:flex;gap:8px;align-items:center}.release-link-row input{flex:1;min-width:240px}.releases-shortcut{white-space:nowrap;text-decoration:none;display:inline-flex;align-items:center;justify-content:center}.help-tip{position:relative;display:inline-flex;width:18px;height:18px;margin-left:5px;align-items:center;justify-content:center;border:1px solid #8151a0;border-radius:50%;font-size:12px;font-weight:800;color:#dcbcff;cursor:help;vertical-align:middle}.help-tip-box{display:none;position:absolute;z-index:50;left:24px;top:-12px;width:340px;padding:12px 14px;border:1px solid #56346b;border-radius:10px;background:#130d19;color:#f2eafa;font-size:12px;font-weight:500;line-height:1.5;box-shadow:0 12px 32px rgba(0,0,0,.4)}.help-tip:hover .help-tip-box,.help-tip:focus .help-tip-box{display:block}@media(max-width:900px){.release-link-row{flex-direction:column;align-items:stretch}.help-tip-box{left:auto;right:0;top:24px;width:min(320px,80vw)}}
+
+.release-first-step{display:flex;align-items:center;gap:10px;margin-left:auto}.release-first-step>span:first-child{font-size:10px;font-weight:900;letter-spacing:1px;color:#c68be0}.release-main-button{display:inline-flex!important;align-items:center!important;justify-content:center!important;min-width:310px!important;height:52px!important;padding:0 26px!important;text-decoration:none!important;font-size:13px!important;font-weight:900!important;letter-spacing:.5px!important}.release-main-help{width:24px;height:24px;font-size:14px;margin-left:0}.release-main-help .help-tip-box{left:auto;right:0;top:34px;width:390px}.admin-v2 .download-heading{gap:24px}.admin-v2 .download-editor{grid-template-columns:130px 150px minmax(320px,1.6fr) minmax(220px,1fr) 170px!important}@media(max-width:900px){.admin-v2 .download-heading{flex-direction:column!important}.release-first-step{margin-left:0;width:100%;flex-wrap:wrap}.release-main-button{min-width:0!important;flex:1}.release-main-help .help-tip-box{right:0;top:32px}}
