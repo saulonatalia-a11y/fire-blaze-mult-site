@@ -3,18 +3,18 @@
 <title>FIRE BLAZE MULT</title>
 <style>
 *{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:transparent;font-family:Arial Black,Arial,sans-serif}
-.stage{position:fixed;inset:0;display:flex;align-items:flex-end;justify-content:center;padding:45px 60px 70px;pointer-events:none}
-.ad{position:relative;width:min(1180px,94vw);height:245px;border:5px solid #ffd928;border-radius:34px;background:linear-gradient(120deg,rgba(4,18,45,.97),rgba(9,63,122,.97) 55%,rgba(26,12,65,.97));box-shadow:0 0 0 5px #1a1a1a,0 0 38px #2ca9ff,0 22px 60px #0009;overflow:hidden;display:flex;align-items:center;animation:cycle 12s infinite cubic-bezier(.2,.8,.2,1)}
+.stage{position:fixed;inset:0;display:flex;align-items:flex-start;justify-content:center;padding:45px 20px 20px;pointer-events:none}
+.ad{position:relative;width:min(740px,92vw);height:210px;border:5px solid #ffd928;border-radius:34px;background:linear-gradient(120deg,rgba(4,18,45,.97),rgba(9,63,122,.97) 55%,rgba(26,12,65,.97));box-shadow:0 0 0 5px #1a1a1a,0 0 38px #2ca9ff,0 22px 60px #0009;overflow:hidden;display:flex;align-items:center;animation:cycle 12s infinite cubic-bezier(.2,.8,.2,1)}
 .ad:before{content:"";position:absolute;inset:-100% -30%;background:linear-gradient(105deg,transparent 42%,#fff4 50%,transparent 58%);animation:shine 3s infinite}
-.left{width:34%;height:100%;position:relative;display:flex;align-items:center;justify-content:center}
-.poke{position:absolute;width:125px;filter:drop-shadow(0 10px 12px #0008);animation:float 2.3s ease-in-out infinite}
-.p1{left:20px;bottom:8px;animation-delay:-.3s}.p2{left:110px;top:10px;animation-delay:-1s}.p3{right:24px;bottom:8px;animation-delay:-1.6s}
-.ball{position:absolute;left:135px;bottom:72px;width:86px;height:86px;border-radius:50%;background:linear-gradient(#ef3340 0 44%,#111 44% 56%,#fff 56%);border:6px solid #111;box-shadow:0 0 22px #fff7;animation:spin 5s linear infinite}
-.ball:after{content:"";position:absolute;width:25px;height:25px;border-radius:50%;background:#fff;border:6px solid #111;left:24px;top:24px}
-.content{z-index:2;width:66%;padding:20px 34px 20px 10px;color:#fff;text-shadow:0 3px 4px #000}
-.brand{font-size:36px;letter-spacing:2px;color:#ffd928;line-height:1}.sub{font-size:22px;margin-top:8px}.desc{font-family:Arial,sans-serif;font-weight:800;font-size:18px;margin-top:8px;color:#d8efff}.cta{display:inline-block;margin-top:13px;background:linear-gradient(#ffef58,#ffb300);color:#111;text-shadow:none;border:3px solid #fff;border-radius:16px;padding:8px 16px;font-size:22px;box-shadow:0 0 20px #ffd928;animation:pulse 1s infinite alternate}.pin{display:inline-block;margin-left:8px;color:#fff;font-size:16px;white-space:nowrap;vertical-align:middle}
+.left{width:32%;height:100%;position:relative;display:flex;align-items:center;justify-content:center}
+.poke{position:absolute;width:100px;filter:drop-shadow(0 10px 12px #0008);animation:float 2.3s ease-in-out infinite}
+.p1{left:5px;bottom:8px;animation-delay:-.3s}.p2{left:65px;top:10px;animation-delay:-1s}.p3{right:5px;bottom:8px;animation-delay:-1.6s}
+.ball{position:absolute;left:82px;bottom:58px;width:70px;height:70px;border-radius:50%;background:linear-gradient(#ef3340 0 44%,#111 44% 56%,#fff 56%);border:6px solid #111;box-shadow:0 0 22px #fff7;animation:spin 5s linear infinite}
+.ball:after{content:"";position:absolute;width:25px;height:25px;border-radius:50%;background:#fff;border:6px solid #111;left:16px;top:16px}
+.content{z-index:2;width:68%;padding:14px 20px 14px 8px;color:#fff;text-shadow:0 3px 4px #000}
+.brand{font-size:29px;letter-spacing:2px;color:#ffd928;line-height:1}.sub{font-size:18px;margin-top:8px}.desc{font-family:Arial,sans-serif;font-weight:800;font-size:15px;margin-top:8px;color:#d8efff}.cta{display:inline-block;margin-top:13px;background:linear-gradient(#ffef58,#ffb300);color:#111;text-shadow:none;border:3px solid #fff;border-radius:16px;padding:7px 13px;font-size:18px;box-shadow:0 0 20px #ffd928;animation:pulse 1s infinite alternate}.pin{display:inline-block;margin-left:8px;color:#fff;font-size:13px;white-space:nowrap;vertical-align:middle}
 .spark{position:absolute;width:12px;height:12px;background:#fff;border-radius:50%;box-shadow:0 0 18px #6cf;animation:spark 2s infinite}.s1{top:25px;left:42%}.s2{top:55px;right:8%;animation-delay:-.7s}.s3{bottom:30px;right:34%;animation-delay:-1.3s}
-@keyframes cycle{0%,100%{transform:translateY(390px) scale(.92);opacity:0}8%,78%{transform:translateY(0) scale(1);opacity:1}88%{transform:translateY(390px) scale(.95);opacity:0}}
+@keyframes cycle{0%,100%{transform:translateY(-300px) scale(.92);opacity:0}8%,78%{transform:translateY(0) scale(1);opacity:1}88%{transform:translateY(-300px) scale(.95);opacity:0}}
 @keyframes shine{0%{transform:translateX(-80%)}60%,100%{transform:translateX(80%)}}
 @keyframes float{0%,100%{transform:translateY(0) rotate(-2deg)}50%{transform:translateY(-15px) rotate(3deg)}}
 @keyframes spin{to{transform:rotate(360deg)}}@keyframes pulse{to{transform:scale(1.08);box-shadow:0 0 32px #fff16b}}
