@@ -45,6 +45,11 @@
     <div class="priceEditor"><label>30 dias<input id="priceMonthly" type="number" min="0.01" step="0.01"></label><label>Vitalício<input id="priceLifetime" type="number" min="0.01" step="0.01"></label><button id="savePrices" class="btn mini">SALVAR PREÇOS</button></div>
   </section>
 
+  <section id="trial-config" class="adminpanel pricepanel admin-card">
+    <div><div class="section-kicker">TESTE GRÁTIS</div><h2>Duração do teste</h2><p>Defina quantas horas os novos testes gratuitos terão.</p></div>
+    <div class="priceEditor"><label>Horas do teste<input id="trialHours" type="number" min="1" max="8760" step="1" value="24"></label><button id="saveTrialHours" class="btn mini">SALVAR DURAÇÃO</button></div>
+  </section>
+
   <section id="downloads" class="adminpanel admin-card download-manager" style="scroll-margin-top:24px">
     <div class="download-heading"><div><div class="section-kicker">VERSÕES DO MULT</div><h2>Publicação de downloads</h2><p>Cadastre uma nova versão sem apagar as anteriores.</p></div><div class="release-first-step"><span>1º PASSO</span><a class="btn release-main-button" href="https://github.com/saulonatalia-a11y/fire-blaze-mult-site/releases" target="_blank" rel="noopener">ABRIR RELEASES ↗</a><span class="help-tip release-main-help" tabindex="0">?<span class="help-tip-box">1. Abra Releases. 2. Clique em criar uma nova Release. Exemplo: Tag v1.0.4 • Título FIRE BLAZE Mult V1.0.4. 3. Envie o arquivo .exe e publique. 4. Depois copie o link direto do .exe publicado e cole no campo Link do instalador abaixo.</span></span></div></div>
     <div class="download-editor"><label>Versão<input id="releaseVersion" placeholder="Ex.: 1.0.4"></label><label>Data<input id="releaseDate" placeholder="Ex.: 24/09/2026"></label><label>Link do instalador<div class="release-link-row"><input id="releaseUrl" type="url" placeholder="Cole aqui o link direto do arquivo .exe"></div></label><label>Observação<input id="releaseNote" maxlength="80" placeholder="Ex.: Correções e melhorias"></label><button id="prepareRelease" class="btn mini">PREPARAR PUBLICAÇÃO</button></div>
