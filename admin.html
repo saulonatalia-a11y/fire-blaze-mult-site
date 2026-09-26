@@ -12,6 +12,7 @@
   <nav>
     <a class="active">▦ Visão geral</a>
     <a href="#clientes" onclick="document.getElementById('clientes').scrollIntoView({behavior:'smooth'});return false">♙ Clientes</a>
+    <a href="#telefones" onclick="document.getElementById('telefones').scrollIntoView({behavior:'smooth'});return false">☎ Telefones</a>
     <a href="#comercial">◇ Comercial</a>
     <a href="#downloads">↓ Downloads</a>
     <a href="#videoaulas">▶ Videoaulas</a>
@@ -70,6 +71,9 @@
     <div class="tutorial-v3-history"><div><div class="section-kicker">AULAS PUBLICADAS</div><h3>Central de Aprendizado</h3></div><span>Arraste para ver mais →</span></div>
     <div id="tutorialAdminList" class="tutorial-admin-list tutorial-v3-list"><article class="tutorial-admin-empty">Nenhuma aula publicada ainda.</article></div>
   </section>
+
+  <section id="telefones" class="clients-head admin-card" style="scroll-margin-top:24px"><div><div class="section-kicker">CONTATOS</div><h2>Telefones dos clientes</h2><p>WhatsApp informado no cadastro de cada cliente.</p></div><div class="client-tools"><input id="phoneSearch" placeholder="Pesquisar e-mail ou telefone..."></div></section>
+  <section class="tablewrap admin-table"><table><thead><tr><th>Cliente</th><th>Telefone / WhatsApp</th><th>Cadastro</th></tr></thead><tbody id="phoneRows"><tr><td colspan="3" class="empty">Carregando...</td></tr></tbody></table></section>
 
   <section id="clientes" class="clients-head admin-card" style="scroll-margin-top:24px">
     <div><div class="section-kicker">GESTÃO</div><h2>Clientes e licenças</h2><p>Os controles existentes foram preservados.</p></div>
