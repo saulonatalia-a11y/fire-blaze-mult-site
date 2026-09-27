@@ -1,4 +1,12 @@
 {
-  "version": "1.0.2",
-  "setup_url": "https://github.com/saulonatalia-a11y/fire-blaze-mult-site/releases/download/v1.0.2/FIRE-BLAZE-Mult-Setup.exe"
+  "version": "1.0.5",
+  "setup_url": "",
+  "sha256": "",
+  "mandatory": false,
+  "notes": [
+    "Novo sistema de atualização dentro do FIRE BLAZE Mult",
+    "Layouts 2x2 e 1x3 com troca de conta principal",
+    "Correções de maximizar e restaurar o layout",
+    "Ajustes de desempenho e diagnóstico de memória"
+  ]
 }
