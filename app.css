@@ -11,3 +11,31 @@
 
 /* Notificacoes */
 .client-notifications{margin-top:16px;padding:25px;background:#100d16;border:1px solid #54266a;border-radius:17px}.client-notifications h2{margin:3px 0 15px}.client-notification{padding:14px 16px;margin-top:9px;background:#0b0810;border:1px solid #2c2033;border-radius:12px}.client-notification>div{display:flex;justify-content:space-between;gap:12px}.client-notification strong{color:#fff}.client-notification span{color:#817589;font-size:11px}.client-notification p{margin:8px 0 0;color:#c6b9cd;white-space:pre-wrap}.notification-admin{align-items:flex-start}.notification-editor{width:min(520px,100%);display:grid;gap:9px}.notification-editor input,.notification-editor textarea{margin:0}.notification-editor textarea{min-height:95px;resize:vertical;background:#09070d;border:1px solid #362840;color:#fff;border-radius:10px;padding:13px;font:inherit}.admin-notifications{display:grid;gap:8px;margin-top:10px}.admin-notifications article{position:relative;padding:15px 110px 15px 16px;background:#100d16;border:1px solid #2c2033;border-radius:12px}.admin-notifications article>div{display:flex;gap:12px;align-items:center}.admin-notifications span{font-size:10px;color:#817589}.admin-notifications p{margin:6px 0 0;color:#b9adbf;white-space:pre-wrap}.admin-notifications button{position:absolute;right:12px;top:12px}@media(max-width:600px){.client-notification>div{flex-direction:column}.admin-notifications article{padding-right:16px}.admin-notifications button{position:static;margin-top:10px}}
+
+
+/* Correção visual dos botões de autenticação */
+.authcard .auth-action{
+  display:flex!important;
+  width:100%!important;
+  min-height:46px;
+  align-items:center;
+  justify-content:center;
+  padding:12px 18px!important;
+  border:1px solid #7657ff!important;
+  border-radius:10px!important;
+  background:linear-gradient(100deg,#7156ff,#9c62ff)!important;
+  color:#fff!important;
+  font:800 12px/1.2 Inter,Segoe UI,Arial,sans-serif!important;
+  letter-spacing:.4px;
+  text-decoration:none!important;
+  cursor:pointer;
+  appearance:none;
+  -webkit-appearance:none;
+  box-shadow:0 8px 22px rgba(113,86,255,.18);
+}
+.authcard .auth-action:hover{filter:brightness(1.1);transform:translateY(-1px)}
+.authcard .create-toggle{
+  margin-top:10px!important;
+  border-color:#a63cff!important;
+  background:linear-gradient(100deg,#8c2dff,#d738ed)!important;
+}
