@@ -2,7 +2,7 @@ Unicode true
 !include "MUI2.nsh"
 
 !define APP_NAME "FIRE BLAZE Mult"
-!define APP_VERSION "1.0.1"
+!define APP_VERSION "1.0.5"
 !define COMPANY "FIRE BLAZE"
 !define EXE_NAME "FIRE BLAZE Mult.exe"
 !define INSTALL_DIR "$LOCALAPPDATA\\Programs\\FIRE BLAZE Mult"
