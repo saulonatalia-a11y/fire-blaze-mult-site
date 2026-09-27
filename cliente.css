@@ -22,3 +22,24 @@ body>header nav button{margin:0!important}
 .tutorial-youtube-card strong{position:absolute;z-index:2;left:22px;bottom:18px;color:#fff;font-size:12px;letter-spacing:.8px}
 .tutorial-youtube-card:hover .tutorial-play{transform:translate(-50%,-50%) scale(1.07)}
 @media(max-width:600px){.tutorial-play{width:58px;height:58px;font-size:23px}.tutorial-youtube-card strong{left:14px;bottom:12px;font-size:10px}}
+
+
+/* Download principal FIRE BLAZE */
+#downloadBox{align-items:center}
+#downloadBtn{
+  min-width:280px;
+  min-height:54px;
+  padding:0 26px;
+  border:1px solid #ff3b30;
+  border-radius:12px;
+  background:linear-gradient(135deg,#ff3b30,#b91c1c);
+  color:#fff;
+  font-size:14px;
+  font-weight:900;
+  letter-spacing:.5px;
+  box-shadow:0 10px 28px rgba(239,68,68,.22);
+  cursor:pointer;
+}
+#downloadBtn:not(:disabled):hover{transform:translateY(-2px);filter:brightness(1.08)}
+#downloadBtn:disabled{opacity:.65;cursor:not-allowed}
+@media(max-width:760px){#downloadBtn{width:100%;min-width:0;margin-top:18px}}
