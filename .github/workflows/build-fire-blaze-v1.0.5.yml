@@ -1,0 +1,60 @@
+name: Gerar FIRE BLAZE Mult V1.0.5 Setup
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - name: Baixar repositorio
+        uses: actions/checkout@v4
+
+      - name: Baixar ZIP aprovado da V1.0.5
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          New-Item -ItemType Directory -Force -Path build | Out-Null
+          if (Test-Path "installer\payload") { Remove-Item "installer\payload" -Recurse -Force }
+          New-Item -ItemType Directory -Force -Path "installer\payload" | Out-Null
+          gh release download "v1.0.5" --repo "${{ github.repository }}" --pattern "FIRE-BLAZE-Mult-V1.0.5-RAM-FIX-L-UPDATE-GITHUB.zip" --dir build
+          Expand-Archive -LiteralPath "build\FIRE-BLAZE-Mult-V1.0.5-RAM-FIX-L-UPDATE-GITHUB.zip" -DestinationPath "installer\payload" -Force
+
+      - name: Normalizar raiz do aplicativo
+        shell: pwsh
+        run: |
+          $root = (Resolve-Path "installer\payload").Path
+          $exe = Get-ChildItem $root -Recurse -Filter "FIRE BLAZE Mult.exe" | Select-Object -First 1
+          if (-not $exe) { throw "FIRE BLAZE Mult.exe nao encontrado no ZIP." }
+          if ($exe.DirectoryName -ne $root) {
+            $sourceDir = $exe.DirectoryName
+            Get-ChildItem $sourceDir -Force | ForEach-Object {
+              Move-Item -LiteralPath $_.FullName -Destination $root -Force
+            }
+          }
+          if (-not (Test-Path (Join-Path $root "resources\app\main.js"))) { throw "resources/app/main.js nao encontrado." }
+
+      - name: Instalar NSIS
+        shell: pwsh
+        run: choco install nsis -y --no-progress
+
+      - name: Compilar Setup V1.0.5
+        shell: pwsh
+        run: |
+          Set-Location installer
+          & "C:\Program Files (x86)\NSIS\makensis.exe" "fire-blaze-mult.nsi"
+          if ($LASTEXITCODE -ne 0) { throw "NSIS retornou erro $LASTEXITCODE." }
+          if (-not (Test-Path "FIRE-BLAZE-Mult-Setup.exe")) { throw "Setup nao foi gerado." }
+          Move-Item "FIRE-BLAZE-Mult-Setup.exe" "FIRE-BLAZE-Mult-Setup-V1.0.5.exe" -Force
+
+      - name: Publicar instalador para teste
+        uses: actions/upload-artifact@v4
+        with:
+          name: FIRE-BLAZE-Mult-Setup-V1.0.5
+          path: installer/FIRE-BLAZE-Mult-Setup-V1.0.5.exe
+          if-no-files-found: error
+          retention-days: 30
