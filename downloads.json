@@ -1,10 +1,16 @@
 {
-  "current": "1.0.4",
+  "current": "1.0.5",
   "versions": [
+    {
+      "version": "1.0.5",
+      "date": "29/09/2026",
+      "note": "Versão atual",
+      "url": "https://github.com/saulonatalia-a11y/fire-blaze-mult-site/releases/download/v1.0.5/FIRE-BLAZE-Mult-Setup-v1.0.5.exe"
+    },
     {
       "version": "1.0.4",
       "date": "25/09/2026",
-      "note": "Versão atual",
+      "note": "Versão anterior",
       "url": "https://github.com/saulonatalia-a11y/fire-blaze-mult-site/releases/download/v1.0.4/FIRE-BLAZE-Mult-Setup-V1.0.4.exe"
     },
     {
