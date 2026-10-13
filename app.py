@@ -1,7 +1,8 @@
-import os,time,json,base64,hmac
+import os,time,json,base64,hmac,secrets,hashlib,smtplib,ssl
+from email.message import EmailMessage
 from pathlib import Path
 from contextlib import contextmanager
-from fastapi import FastAPI,HTTPException,Header
+from fastapi import FastAPI,HTTPException,Header,Response,Request
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel,EmailStr,Field
 import psycopg
@@ -120,5 +121,95 @@ def delete(req:Action,authorization:str|None=Header(None)):
   u=user(c,req.email)
   if not u:raise HTTPException(404,'Cliente não encontrado')
   c.execute('DELETE FROM customers WHERE id=%s',(u['id'],));audit(c,'delete',{'email':str(req.email)})
+ return {'ok':True}
+
+# Portal access is intentionally separate from device licensing.
+# Never grant access solely because an email exists.
+class PortalEmail(BaseModel):
+ email:EmailStr
+class PortalVerify(BaseModel):
+ email:EmailStr
+ code:str=Field(min_length=6,max_length=6)
+ password:str=Field(min_length=12,max_length=128)
+def eligible(c,email):
+ return bool(c.execute("""SELECT 1 FROM legacy_imports WHERE lower(email)=lower(%s)
+ AND original_plan='lifetime' AND original_status='active'
+ AND (expires_at IS NULL OR expires_at>now()) AND review_status='approved' LIMIT 1""",(email,)).fetchone())
+def password_digest(password,salt=None):
+ salt=salt or secrets.token_bytes(16)
+ digest=hashlib.scrypt(password.encode(),salt=salt,n=16384,r=8,p=1)
+ return base64.b64encode(salt+digest).decode()
+def password_check(password,stored):
+ try:
+  raw=base64.b64decode(stored);return hmac.compare_digest(base64.b64decode(password_digest(password,raw[:16]))[16:],raw[16:])
+ except (ValueError,TypeError):return False
+def send_code(email,code):
+ host=os.environ.get('SMTP_HOST');user=os.environ.get('SMTP_USER');password=os.environ.get('SMTP_PASSWORD')
+ sender=os.environ.get('SMTP_FROM')
+ if not all((host,user,password,sender)):raise HTTPException(503,'Envio de e-mails ainda não configurado')
+ msg=EmailMessage();msg['Subject']='Seu código FIRE BLAZE';msg['From']=sender;msg['To']=email
+ msg.set_content('Seu código de confirmação é: '+code+'\\nExpira em 10 minutos. Não compartilhe.')
+ try:
+  with smtplib.SMTP(host,int(os.environ.get('SMTP_PORT','587')),timeout=10) as smtp:
+   smtp.starttls(context=ssl.create_default_context());smtp.login(user,password);smtp.send_message(msg)
+ except Exception:raise HTTPException(503,'Serviço de e-mail indisponível')
+@app.post('/api/portal/request-code')
+def portal_request(req:PortalEmail):
+ email=str(req.email).lower().strip()
+ with db() as c:
+  if not eligible(c,email):
+   return {'ok':True,'next':'purchase','message':'Não há licença vitalícia aprovada para este e-mail.'}
+  prior=c.execute('SELECT sent_at FROM portal_verifications WHERE email=%s',(email,)).fetchone()
+  if prior and (time.time()-prior['sent_at'].timestamp())<90:raise HTTPException(429,'Aguarde antes de solicitar outro código')
+  code=f'{secrets.randbelow(1000000):06d}'
+  send_code(email,code)
+  digest=hashlib.sha256((email+':'+code).encode()).hexdigest()
+  c.execute("""INSERT INTO portal_verifications(email,code_hash,expires_at,attempts,sent_at)
+  VALUES(%s,%s,now()+interval '10 minutes',0,now())
+  ON CONFLICT(email) DO UPDATE SET code_hash=excluded.code_hash,expires_at=excluded.expires_at,
+  attempts=0,sent_at=now()""",(email,digest))
+ return {'ok':True,'next':'verify','message':'Código enviado para seu e-mail.'}
+@app.post('/api/portal/create-password')
+def portal_create(req:PortalVerify):
+ email=str(req.email).lower().strip()
+ with db() as c:
+  if not eligible(c,email):raise HTTPException(403,'Licença não autorizada')
+  v=c.execute('SELECT * FROM portal_verifications WHERE email=%s FOR UPDATE',(email,)).fetchone()
+  if not v or v['expires_at'].timestamp()<time.time() or v['attempts']>=5:raise HTTPException(403,'Código expirado ou bloqueado')
+  c.execute('UPDATE portal_verifications SET attempts=attempts+1 WHERE email=%s',(email,))
+  if not hmac.compare_digest(v['code_hash'],hashlib.sha256((email+':'+req.code).encode()).hexdigest()):
+   raise HTTPException(403,'Código inválido')
+  c.execute("""INSERT INTO portal_accounts(email,password_hash,email_verified_at) VALUES(%s,%s,now())
+  ON CONFLICT(email) DO UPDATE SET password_hash=excluded.password_hash,email_verified_at=now()""",(email,password_digest(req.password)))
+  c.execute('DELETE FROM portal_verifications WHERE email=%s',(email,))
+ return {'ok':True}
+class PortalLogin(BaseModel):
+ email:EmailStr
+ password:str
+@app.post('/api/portal/login')
+def portal_login(req:PortalLogin,response:Response):
+ email=str(req.email).lower().strip()
+ with db() as c:
+  account=c.execute('SELECT password_hash FROM portal_accounts WHERE email=%s',(email,)).fetchone()
+  if not account or not eligible(c,email) or not password_check(req.password,account['password_hash']):
+   raise HTTPException(401,'Credenciais inválidas ou licença não autorizada')
+  token=secrets.token_urlsafe(40)
+  c.execute("INSERT INTO portal_sessions(token_hash,email,expires_at) VALUES(%s,%s,now()+interval '7 days')",(hashlib.sha256(token.encode()).hexdigest(),email))
+ response.set_cookie('fb_session',token,httponly=True,secure=True,samesite='lax',max_age=604800,path='/api/portal')
+ return {'ok':True}
+@app.get('/api/portal/me')
+def portal_me(request:Request):
+ token=request.cookies.get('fb_session','')
+ if not token:raise HTTPException(401,'Faça login')
+ with db() as c:
+  sess=c.execute('SELECT email FROM portal_sessions WHERE token_hash=%s AND expires_at>now()',(hashlib.sha256(token.encode()).hexdigest(),)).fetchone()
+  if not sess or not eligible(c,sess['email']):raise HTTPException(401,'Sessão inválida')
+  return {'email':sess['email'],'plan':'lifetime','status':'active'}
+@app.post('/api/portal/logout')
+def portal_logout(request:Request,response:Response):
+ token=request.cookies.get('fb_session','')
+ if token:
+  with db() as c:c.execute('DELETE FROM portal_sessions WHERE token_hash=%s',(hashlib.sha256(token.encode()).hexdigest(),))
+ response.delete_cookie('fb_session',path='/api/portal')
  return {'ok':True}
 app.mount('/',StaticFiles(directory=str(Path(__file__).parent / 'site'),html=True),name='site')
