@@ -14,7 +14,14 @@ button{width:100%;background:linear-gradient(120deg,#7454f6,#a267ff);border:0;bo
 </style></head>
 <body><div class="wrap"><header><div class="logo">🔥 FIRE BLAZE MULT</div><a href="/">← Voltar ao site</a></header>
 <section class="hero"><h1>Sua área do cliente</h1><p>Gerencie solicitações relacionadas ao seu FIRE BLAZE Mult em um único lugar.</p></section>
-<div class="grid"><section class="panel"><h2>Central de atendimento</h2><p>Solicite a troca de computador ou a exclusão da sua conta. Sua solicitação será analisada pela administração.</p>
+<section class="panel" style="margin:20px 0"><h2>Entrar ou criar senha</h2><p>Somente clientes com licença vitalícia ativa e aprovada podem criar uma senha.</p>
+<label for="portalEmail">E-mail cadastrado</label><input type="email" id="portalEmail" placeholder="seu@email.com" autocomplete="email">
+<button id="checkBtn" onclick="requestCode()">Continuar com e-mail</button>
+<div id="verifyBox" hidden><label for="portalCode">Código recebido por e-mail</label><input id="portalCode" inputmode="numeric" maxlength="6" placeholder="000000"><label for="portalPassword">Nova senha (mínimo 12 caracteres)</label><input id="portalPassword" type="password" minlength="12" autocomplete="new-password"><button onclick="createPassword()">Criar minha senha</button></div>
+<div id="loginBox"><label for="loginPassword">Já tem senha? Entre aqui</label><input id="loginPassword" type="password" autocomplete="current-password" placeholder="Sua senha"><button onclick="login()">Entrar</button></div>
+<div id="welcome" hidden><h3 id="welcomeTitle"></h3><p>Licença vitalícia reconhecida.</p><button onclick="logout()">Sair</button></div>
+<div class="notice" id="portalNotice" role="status" aria-live="polite"></div>
+</section><div class="grid"><section class="panel"><h2>Central de atendimento</h2><p>Solicite a troca de computador ou a exclusão da sua conta. Sua solicitação será analisada pela administração.</p>
 <form id="requestForm"><label for="email">E-mail cadastrado</label><input type="email" id="email" name="email" autocomplete="email" required placeholder="voce@exemplo.com">
 <label for="kind">O que você precisa?</label><select id="kind" name="kind"><option value="reset_pc">Liberar ou trocar computador</option><option value="delete_account">Solicitar exclusão de conta</option></select>
 <label for="note">Detalhes (opcional)</label><textarea id="note" name="note" maxlength="500" placeholder="Conte o que aconteceu..."></textarea>
@@ -31,4 +38,12 @@ const response=await fetch('/api/request',{method:'POST',headers:{'Content-Type'
 if(!response.ok){const d=await response.json().catch(()=>({}));throw Error(d.detail==='Conta não encontrada'?'Não encontramos esse e-mail cadastrado. Verifique o endereço.':'Não foi possível registrar a solicitação. Tente novamente.')}
 notice.textContent='Solicitação registrada! Aguarde a análise da administração.';notice.classList.add('show');form.reset()
 }catch(err){notice.textContent=err.message;notice.classList.add('show')}finally{btn.disabled=false}});
+
+const pe=document.getElementById('portalEmail'),pn=document.getElementById('portalNotice');
+function portalMsg(t){pn.textContent=t;pn.classList.add('show')}
+async function portalCall(path,data){const r=await fetch('/api/portal/'+path,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data),credentials:'same-origin'});const d=await r.json().catch(()=>({}));if(!r.ok)throw Error(typeof d.detail==='string'?d.detail:'Não foi possível concluir');return d}
+async function requestCode(){try{const d=await portalCall('request-code',{email:pe.value});if(d.next==='purchase'){portalMsg('Não encontramos uma licença vitalícia aprovada. Consulte a compra de R$ 29,90 ou fale com o suporte.');return}verifyBox.hidden=false;portalMsg('Enviamos um código ao seu e-mail.')}catch(e){portalMsg(e.message)}}
+async function createPassword(){try{await portalCall('create-password',{email:pe.value,code:portalCode.value,password:portalPassword.value});verifyBox.hidden=true;portalMsg('Senha criada. Agora entre usando sua senha.')}catch(e){portalMsg(e.message)}}
+async function login(){try{await portalCall('login',{email:pe.value,password:loginPassword.value});loginBox.hidden=true;checkBtn.hidden=true;welcome.hidden=false;welcomeTitle.textContent='Bem-vindo!';portalMsg('Acesso autorizado.')}catch(e){portalMsg(e.message)}}
+async function logout(){await portalCall('logout',{});location.reload()}
 </script></body></html>
