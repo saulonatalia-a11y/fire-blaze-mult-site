@@ -19,7 +19,7 @@ app=FastAPI(title="FIRE BLAZE Mult")
 def db():
  with psycopg.connect(DATABASE_URL,row_factory=dict_row) as c: yield c
 class Start(BaseModel):
- email:EmailStr
+ email:EmailStr|None=None
  device:str=Field(min_length=16,max_length=128)
 class Action(BaseModel):
  email:EmailStr
@@ -44,20 +44,37 @@ def health():
 def config():
  with db() as c:r=c.execute("SELECT value FROM app_settings WHERE key='lifetime_price_brl'").fetchone()
  return {'price':r['value'] if r else '29.90','trial_hours':7,'public_key':public}
+def trial_user(c,req,lock=False):
+ # A trial is identified by the device, never by a user-supplied email.
+ suffix=' FOR UPDATE' if lock else ''
+ return c.execute('SELECT * FROM customers WHERE device_hash=%s ORDER BY id ASC LIMIT 1'+suffix,(req.device,)).fetchone()
 @app.post('/api/start')
 def start(req:Start):
  with db() as c:
-  u=user(c,req.email)
-  if not u:
-   if c.execute('SELECT id FROM customers WHERE device_hash=%s',(req.device,)).fetchone():raise HTTPException(403,'Teste já utilizado neste PC')
-   c.execute('INSERT INTO customers(email,device_hash) VALUES(%s,%s)',(str(req.email).lower(),req.device));u=user(c,req.email)
-  if u['device_hash']!=req.device or u['status']=='blocked':raise HTTPException(403,'PC não autorizado')
+  if req.email:
+   u=user(c,req.email)
+   if not u:
+    if trial_user(c,req):raise HTTPException(403,'Teste já utilizado neste PC')
+    c.execute('INSERT INTO customers(email,device_hash) VALUES(%s,%s)',(str(req.email).lower(),req.device))
+    u=user(c,req.email)
+   if u['device_hash']!=req.device or u['status']=='blocked':raise HTTPException(403,'PC não autorizado')
+  else:
+   u=trial_user(c,req)
+   if not u:
+    # Internal, deterministic identifier; reinstalling does not reset the trial.
+    internal='trial-'+hashlib.sha256(req.device.encode()).hexdigest()+'@device.fireblaze.invalid'
+    c.execute('INSERT INTO customers(email,device_hash) VALUES(%s,%s) ON CONFLICT(email) DO NOTHING',(internal,req.device))
+    u=trial_user(c,req)
+   if not u or u['status']=='blocked':raise HTTPException(403,'PC não autorizado')
   return result(c,u)
 @app.post('/api/heartbeat')
 def heartbeat(req:Start):
  now=int(time.time())
  with db() as c:
-  u=c.execute('SELECT * FROM customers WHERE email=%s FOR UPDATE',(str(req.email).lower(),)).fetchone()
+  if req.email:
+   u=c.execute('SELECT * FROM customers WHERE email=%s FOR UPDATE',(str(req.email).lower(),)).fetchone()
+  else:
+   u=trial_user(c,req,lock=True)
   if not u or u['device_hash']!=req.device or u['status']=='blocked':raise HTTPException(403,'Não autorizado')
   if u['status']=='lifetime':return result(c,u)
   if u['status']=='expired' or u['trial_seconds_remaining']<=0:raise HTTPException(403,'Teste expirado')
