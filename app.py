@@ -28,6 +28,7 @@ class Request(BaseModel):
  email:EmailStr
  kind:str
  note:str=''
+ device:str|None=Field(default=None,min_length=16,max_length=128)
 def auth(a):
  if not a or not a.startswith('Bearer ') or ADMIN_PASSWORD=='fire-blaze-admin-config-pending' or len(ADMIN_PASSWORD)<20 or not hmac.compare_digest(a[7:],ADMIN_PASSWORD):raise HTTPException(401,'Acesso negado')
 def user(c,e):return c.execute('SELECT * FROM customers WHERE email=%s',(str(e).lower(),)).fetchone()
@@ -68,12 +69,24 @@ def heartbeat(req:Start):
   return {'status':status,'remaining_seconds':left,'license':None}
 @app.post('/api/request')
 def request_change(req:Request):
- if req.kind not in ('reset_pc','delete_account'):raise HTTPException(400,'Pedido inválido')
+ if req.kind not in ('reset_pc','delete_account','lifetime'):raise HTTPException(400,'Pedido inválido')
  with db() as c:
   u=user(c,req.email)
+  if req.kind=='lifetime' and not u:
+   if not req.device:raise HTTPException(400,'Identificação do computador obrigatória')
+   if c.execute('SELECT id FROM customers WHERE device_hash=%s',(req.device,)).fetchone():
+    raise HTTPException(409,'Este computador já está vinculado a outra conta. Contate o suporte.')
+   c.execute('INSERT INTO customers(email,device_hash) VALUES(%s,%s)',(str(req.email).lower(),req.device))
+   u=user(c,req.email)
   if not u:raise HTTPException(404,'Conta não encontrada')
+  if req.kind=='lifetime':
+   if not req.device or u['device_hash']!=req.device:raise HTTPException(409,'Computador diferente do registrado. Contate o suporte.')
+   if u['status']=='lifetime':return {'ok':True,'status':'lifetime'}
+   pending=c.execute("SELECT id FROM customer_requests WHERE customer_id=%s AND request_type='lifetime' AND status='pending' LIMIT 1",(u['id'],)).fetchone()
+   if pending:return {'ok':True,'status':'pending'}
   c.execute('INSERT INTO customer_requests(customer_id,request_type,note) VALUES(%s,%s,%s)',(u['id'],req.kind,req.note[:500]))
- return {'ok':True}
+ return {'ok':True,'status':'pending'}
+
 @app.get('/api/admin/dashboard')
 def dashboard(authorization:str|None=Header(None)):
  auth(authorization)
