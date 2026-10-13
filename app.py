@@ -153,6 +153,13 @@ def send_code(email,code):
   with smtplib.SMTP(host,int(os.environ.get('SMTP_PORT','587')),timeout=10) as smtp:
    smtp.starttls(context=ssl.create_default_context());smtp.login(user,password);smtp.send_message(msg)
  except Exception:raise HTTPException(503,'Serviço de e-mail indisponível')
+@app.post('/api/portal/check-email')
+def portal_check(req:PortalEmail):
+ email=str(req.email).lower().strip()
+ with db() as c:
+  if not eligible(c,email):return {'next':'purchase'}
+  existing=c.execute('SELECT 1 FROM portal_accounts WHERE email=%s AND password_hash IS NOT NULL',(email,)).fetchone()
+  return {'next':'login' if existing else 'verify'}
 @app.post('/api/portal/request-code')
 def portal_request(req:PortalEmail):
  email=str(req.email).lower().strip()
