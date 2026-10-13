@@ -118,4 +118,4 @@ def delete(req:Action,authorization:str|None=Header(None)):
   if not u:raise HTTPException(404,'Cliente não encontrado')
   c.execute('DELETE FROM customers WHERE id=%s',(u['id'],));audit(c,'delete',{'email':str(req.email)})
  return {'ok':True}
-app.mount('/',StaticFiles(directory=str(Path(__file__).parent),html=True),name='site')
+app.mount('/',StaticFiles(directory=str(Path(__file__).parent / 'site'),html=True),name='site')
