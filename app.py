@@ -72,18 +72,34 @@ def request_change(req:Request):
  if req.kind not in ('reset_pc','delete_account','lifetime'):raise HTTPException(400,'Pedido inválido')
  with db() as c:
   u=user(c,req.email)
-  if req.kind=='lifetime' and not u:
-   if not req.device:raise HTTPException(400,'Identificação do computador obrigatória')
-   if c.execute('SELECT id FROM customers WHERE device_hash=%s',(req.device,)).fetchone():
-    raise HTTPException(409,'Este computador já está vinculado a outra conta. Contate o suporte.')
-   c.execute('INSERT INTO customers(email,device_hash) VALUES(%s,%s)',(str(req.email).lower(),req.device))
-   u=user(c,req.email)
-  if not u:raise HTTPException(404,'Conta não encontrada')
   if req.kind=='lifetime':
-   if not req.device or u['device_hash']!=req.device:raise HTTPException(409,'Computador diferente do registrado. Contate o suporte.')
-   if u['status']=='lifetime':return {'ok':True,'status':'lifetime'}
-   pending=c.execute("SELECT id FROM customer_requests WHERE customer_id=%s AND request_type='lifetime' AND status='pending' LIMIT 1",(u['id'],)).fetchone()
+   if not req.device:raise HTTPException(400,'Identificação do computador obrigatória')
+   old=c.execute("""SELECT 1 FROM legacy_imports WHERE lower(email)=lower(%s)
+    AND original_plan='lifetime' AND original_status='active'
+    AND (expires_at IS NULL OR expires_at>now()) LIMIT 1""",(str(req.email),)).fetchone()
+   if not u:
+    taken=c.execute('SELECT id FROM customers WHERE device_hash=%s LIMIT 1',(req.device,)).fetchone()
+    if taken and not old:raise HTTPException(409,'Teste já utilizado neste PC')
+    # An old lifetime record is only a claim, not authorization. No new free trial.
+    if taken:
+     c.execute("""INSERT INTO customers(email,device_hash,status,trial_seconds_remaining)
+      VALUES(%s,%s,'expired',0)""",(str(req.email).lower(),req.device))
+    else:
+     c.execute('INSERT INTO customers(email,device_hash) VALUES(%s,%s)',(str(req.email).lower(),req.device))
+    u=user(c,req.email)
+   if u['status']=='blocked':raise HTTPException(403,'Conta bloqueada; contate o suporte')
+   if u['device_hash']!=req.device:
+    if not old:raise HTTPException(409,'Computador diferente do registrado. Contate o suporte.')
+    # Never silently move a lifetime license to a different device.
+    note='Solicitação de recuperação: dispositivo informado '+req.device
+   else:note='Solicitação de acesso vitalício'
+   if u['status']=='lifetime' and u['device_hash']==req.device:return {'ok':True,'status':'lifetime'}
+   pending=c.execute("""SELECT id FROM customer_requests WHERE customer_id=%s
+    AND request_type='lifetime' AND status='pending' LIMIT 1""",(u['id'],)).fetchone()
    if pending:return {'ok':True,'status':'pending'}
+   c.execute('INSERT INTO customer_requests(customer_id,request_type,note) VALUES(%s,%s,%s)',(u['id'],'lifetime',note))
+   return {'ok':True,'status':'pending'}
+  if not u:raise HTTPException(404,'Conta não encontrada')
   c.execute('INSERT INTO customer_requests(customer_id,request_type,note) VALUES(%s,%s,%s)',(u['id'],req.kind,req.note[:500]))
  return {'ok':True,'status':'pending'}
 
