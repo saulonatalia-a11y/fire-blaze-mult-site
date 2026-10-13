@@ -29,7 +29,7 @@ class Request(BaseModel):
  kind:str
  note:str=''
 def auth(a):
- if not a or not a.startswith('Bearer ') or not hmac.compare_digest(a[7:],ADMIN_PASSWORD):raise HTTPException(401,'Acesso negado')
+ if not a or not a.startswith('Bearer ') or ADMIN_PASSWORD=='fire-blaze-admin-config-pending' or len(ADMIN_PASSWORD)<20 or not hmac.compare_digest(a[7:],ADMIN_PASSWORD):raise HTTPException(401,'Acesso negado')
 def user(c,e):return c.execute('SELECT * FROM customers WHERE email=%s',(str(e).lower(),)).fetchone()
 def result(c,u):
  lic=c.execute('SELECT license_payload FROM licenses WHERE customer_id=%s AND revoked_at IS NULL ORDER BY id DESC LIMIT 1',(u['id'],)).fetchone()
@@ -129,7 +129,7 @@ class PortalEmail(BaseModel):
  email:EmailStr
 class PortalVerify(BaseModel):
  email:EmailStr
- code:str=Field(min_length=6,max_length=6)
+ code:str=Field(min_length=6,max_length=12)
  password:str=Field(min_length=12,max_length=128)
 def eligible(c,email):
  return bool(c.execute("""SELECT 1 FROM legacy_imports WHERE lower(email)=lower(%s)
@@ -153,6 +153,34 @@ def send_code(email,code):
   with smtplib.SMTP(host,int(os.environ.get('SMTP_PORT','587')),timeout=10) as smtp:
    smtp.starttls(context=ssl.create_default_context());smtp.login(user,password);smtp.send_message(msg)
  except Exception:raise HTTPException(503,'Serviço de e-mail indisponível')
+class ManualGrant(BaseModel):
+ email:EmailStr
+ payment_checked:bool=False
+@app.post('/api/admin/approve-legacy')
+def approve_legacy(req:ManualGrant,authorization:str|None=Header(None)):
+ auth(authorization)
+ if not req.payment_checked:raise HTTPException(400,'Confirme o pagamento antes de aprovar')
+ email=str(req.email).lower().strip()
+ with db() as c:
+  rows=c.execute("""UPDATE legacy_imports SET review_status='approved'
+  WHERE lower(email)=%s AND original_plan='lifetime' AND original_status='active'
+  AND (expires_at IS NULL OR expires_at>now()) RETURNING legacy_license_id""",(email,)).fetchall()
+  if not rows:raise HTTPException(404,'Nenhuma licença vitalícia ativa encontrada')
+  audit(c,'legacy_approved',{'email':email,'count':len(rows)})
+ return {'ok':True,'licenses':len(rows)}
+@app.post('/api/admin/manual-code')
+def manual_code(req:PortalEmail,authorization:str|None=Header(None)):
+ auth(authorization)
+ email=str(req.email).lower().strip()
+ with db() as c:
+  if not eligible(c,email):raise HTTPException(403,'Aprove a licença vitalícia antes de emitir código')
+  code=str(secrets.randbelow(90000000)+10000000)
+  digest=hashlib.sha256((email+':'+code).encode()).hexdigest()
+  c.execute("""INSERT INTO portal_manual_codes(email,code_hash,expires_at,attempts)
+  VALUES(%s,%s,now()+interval '24 hours',0)
+  ON CONFLICT(email) DO UPDATE SET code_hash=excluded.code_hash,expires_at=excluded.expires_at,attempts=0""",(email,digest))
+  audit(c,'manual_code_created',{'email':email})
+ return {'email':email,'code':code,'expires_in_hours':24}
 @app.post('/api/portal/check-email')
 def portal_check(req:PortalEmail):
  email=str(req.email).lower().strip()
@@ -182,13 +210,18 @@ def portal_create(req:PortalVerify):
  with db() as c:
   if not eligible(c,email):raise HTTPException(403,'Licença não autorizada')
   v=c.execute('SELECT * FROM portal_verifications WHERE email=%s FOR UPDATE',(email,)).fetchone()
+  manual=False
+  if not v:
+   v=c.execute('SELECT * FROM portal_manual_codes WHERE email=%s FOR UPDATE',(email,)).fetchone()
+   manual=bool(v)
   if not v or v['expires_at'].timestamp()<time.time() or v['attempts']>=5:raise HTTPException(403,'Código expirado ou bloqueado')
-  c.execute('UPDATE portal_verifications SET attempts=attempts+1 WHERE email=%s',(email,))
+  c.execute('UPDATE '+('portal_manual_codes' if manual else 'portal_verifications')+' SET attempts=attempts+1 WHERE email=%s',(email,))
   if not hmac.compare_digest(v['code_hash'],hashlib.sha256((email+':'+req.code).encode()).hexdigest()):
    raise HTTPException(403,'Código inválido')
   c.execute("""INSERT INTO portal_accounts(email,password_hash,email_verified_at) VALUES(%s,%s,now())
   ON CONFLICT(email) DO UPDATE SET password_hash=excluded.password_hash,email_verified_at=now()""",(email,password_digest(req.password)))
   c.execute('DELETE FROM portal_verifications WHERE email=%s',(email,))
+  c.execute('DELETE FROM portal_manual_codes WHERE email=%s',(email,))
  return {'ok':True}
 class PortalLogin(BaseModel):
  email:EmailStr
