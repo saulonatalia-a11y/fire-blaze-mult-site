@@ -9,8 +9,10 @@ from psycopg.rows import dict_row
 from cryptography.hazmat.primitives import serialization
 DATABASE_URL=os.environ['DATABASE_URL']
 ADMIN_PASSWORD=os.environ['FIRE_ADMIN_PASSWORD']
-key=serialization.load_pem_private_key(base64.b64decode(os.environ['FIRE_SIGNING_KEY_B64']),password=None)
-public=base64.b64encode(key.public_key().public_bytes(serialization.Encoding.Raw,serialization.PublicFormat.Raw)).decode()
+key=None
+if os.environ.get('FIRE_SIGNING_KEY_B64'):
+ key=serialization.load_pem_private_key(base64.b64decode(os.environ['FIRE_SIGNING_KEY_B64']),password=None)
+public=base64.b64encode(key.public_key().public_bytes(serialization.Encoding.Raw,serialization.PublicFormat.Raw)).decode() if key else None
 app=FastAPI(title="FIRE BLAZE Mult")
 @contextmanager
 def db():
@@ -85,6 +87,7 @@ def grant(req:Action,authorization:str|None=Header(None)):
   u=user(c,req.email)
   if not u or not u['device_hash']:raise HTTPException(404,'Cliente sem PC')
   payload=json.dumps({'product':'fire-blaze-mult','type':'lifetime','email':u['email'],'device':u['device_hash'],'issued':int(time.time()),'version':1},sort_keys=True,separators=(',',':')).encode()
+  if key is None:raise HTTPException(503,'Assinatura de licenças não configurada')
   token=base64.urlsafe_b64encode(payload).decode().rstrip('=')+'.'+base64.urlsafe_b64encode(key.sign(payload)).decode().rstrip('=')
   c.execute('UPDATE licenses SET revoked_at=now() WHERE customer_id=%s AND revoked_at IS NULL',(u['id'],))
   c.execute('INSERT INTO licenses(customer_id,device_hash,license_payload) VALUES(%s,%s,%s)',(u['id'],u['device_hash'],token))
