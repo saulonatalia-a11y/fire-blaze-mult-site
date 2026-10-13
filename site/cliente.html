@@ -9,19 +9,20 @@
 h2{margin:0 0 12px;font-size:23px}label{display:block;font-size:14px;color:#b9bfd5;margin:20px 0 8px}input,select,textarea{width:100%;border:1px solid #414765;background:#0e1327;color:white;border-radius:11px;padding:15px;font:inherit}textarea{min-height:95px;resize:vertical}
 button{width:100%;background:linear-gradient(120deg,#7454f6,#a267ff);border:0;border-radius:12px;padding:16px;color:white;font-weight:bold;font-size:16px;cursor:pointer;margin-top:22px}button:disabled{opacity:.6;cursor:wait}
 .mini{display:flex;gap:14px;align-items:center;margin:18px 0}.icon{display:grid;place-items:center;background:#302752;border-radius:12px;width:45px;height:45px;flex-shrink:0}.mini strong{display:block}.mini small{display:block;color:#aeb4ce;margin-top:5px}
-.price{font-size:33px;font-weight:900;color:#c4b3ff}.notice{margin-top:16px;padding:12px;border-radius:9px;background:#262f4a;display:none}.notice.show{display:block}
+.price{font-size:33px;font-weight:900;color:#c4b3ff}.notice{margin-top:16px;padding:12px;border-radius:9px;background:#262f4a;display:none}.notice.show{display:block}[hidden]{display:none!important}.auth{max-width:560px;margin:30px auto}.auth h2{font-size:27px}.subtle{font-size:14px}.secondary{background:#2c3350}.buy{display:block;text-align:center;background:linear-gradient(120deg,#7454f6,#a267ff);border-radius:12px;padding:16px;margin-top:18px;color:white;font-weight:bold}
 @media(max-width:760px){.grid{grid-template-columns:1fr}.hero{padding-top:35px}.panel{padding:22px}}
 </style></head>
 <body><div class="wrap"><header><div class="logo">🔥 FIRE BLAZE MULT</div><a href="/">← Voltar ao site</a></header>
-<section class="hero"><h1>Sua área do cliente</h1><p>Gerencie solicitações relacionadas ao seu FIRE BLAZE Mult em um único lugar.</p></section>
-<section class="panel" style="margin:20px 0"><h2>Entrar ou criar senha</h2><p>Somente clientes com licença vitalícia ativa e aprovada podem criar uma senha.</p>
-<label for="portalEmail">E-mail cadastrado</label><input type="email" id="portalEmail" placeholder="seu@email.com" autocomplete="email">
-<button id="checkBtn" onclick="requestCode()">Continuar com e-mail</button>
-<div id="verifyBox" hidden><label for="portalCode">Código recebido por e-mail</label><input id="portalCode" inputmode="numeric" maxlength="6" placeholder="000000"><label for="portalPassword">Nova senha (mínimo 12 caracteres)</label><input id="portalPassword" type="password" minlength="12" autocomplete="new-password"><button onclick="createPassword()">Criar minha senha</button></div>
-<div id="loginBox"><label for="loginPassword">Já tem senha? Entre aqui</label><input id="loginPassword" type="password" autocomplete="current-password" placeholder="Sua senha"><button onclick="login()">Entrar</button></div>
-<div id="welcome" hidden><h3 id="welcomeTitle"></h3><p>Licença vitalícia reconhecida.</p><button onclick="logout()">Sair</button></div>
-<div class="notice" id="portalNotice" role="status" aria-live="polite"></div>
-</section><div class="grid"><section class="panel"><h2>Central de atendimento</h2><p>Solicite a troca de computador ou a exclusão da sua conta. Sua solicitação será analisada pela administração.</p>
+<section class="panel auth" id="authPanel">
+<h2>Bem-vindo ao FIRE BLAZE</h2><p class="subtle">Informe seu e-mail para acessar sua conta.</p>
+<div id="emailStep"><label for="portalEmail">Seu e-mail</label><input type="email" id="portalEmail" placeholder="seu@email.com" autocomplete="email" required><button id="checkBtn" onclick="checkEmail()">Continuar</button></div>
+<div id="verifyStep" hidden><p>Identificamos sua licença vitalícia. Confirme seu e-mail para criar uma senha.</p><button id="sendBtn" onclick="sendCode()">Enviar código para meu e-mail</button><div id="codeFields" hidden><label for="portalCode">Código recebido</label><input id="portalCode" maxlength="6" inputmode="numeric" placeholder="000000"><label for="portalPassword">Crie sua senha (mínimo 12 caracteres)</label><input type="password" id="portalPassword" minlength="12" autocomplete="new-password"><button onclick="createPassword()">Criar senha e continuar</button></div><button class="secondary" onclick="backToEmail()">Voltar</button></div>
+<div id="loginStep" hidden><p>Conta encontrada. Digite sua senha para entrar.</p><label for="loginPassword">Sua senha</label><input type="password" id="loginPassword" autocomplete="current-password" placeholder="Digite sua senha"><button onclick="login()">Entrar</button><button class="secondary" onclick="backToEmail()">Usar outro e-mail</button></div>
+<div id="purchaseStep" hidden><h2>E-mail não cadastrado</h2><p>Não encontramos uma licença vitalícia aprovada para este e-mail. Você pode adquirir o FIRE BLAZE Mult por <strong>R$ 29,90</strong>.</p><a class="buy" href="/#comprar">Comprar agora — R$ 29,90</a><p class="subtle">O pagamento ainda não está habilitado. Você poderá criar sua senha após a compra ser confirmada e sua licença ativada.</p><button class="secondary" onclick="backToEmail()">Tentar outro e-mail</button></div>
+<div id="welcome" hidden><h2>Minha conta</h2><p id="welcomeTitle"></p><p>Plano: <strong>Vitalício</strong></p><button onclick="logout()">Sair</button></div>
+<div class="notice" id="portalNotice" role="status" aria-live="polite"></div></section>
+<div id="memberArea" hidden><section class="hero"><h1>Área do cliente</h1><p>Gerencie suas solicitações e informações do FIRE BLAZE.</p></section>
+<div class="grid"><section class="panel"><h2>Central de atendimento</h2><p>Solicite a troca de computador ou a exclusão da sua conta. Sua solicitação será analisada pela administração.</p>
 <form id="requestForm"><label for="email">E-mail cadastrado</label><input type="email" id="email" name="email" autocomplete="email" required placeholder="voce@exemplo.com">
 <label for="kind">O que você precisa?</label><select id="kind" name="kind"><option value="reset_pc">Liberar ou trocar computador</option><option value="delete_account">Solicitar exclusão de conta</option></select>
 <label for="note">Detalhes (opcional)</label><textarea id="note" name="note" maxlength="500" placeholder="Conte o que aconteceu..."></textarea>
@@ -30,7 +31,7 @@ button{width:100%;background:linear-gradient(120deg,#7454f6,#a267ff);border:0;bo
 <aside class="panel"><h2>Seu FIRE BLAZE</h2><div class="mini"><span class="icon">🎮</span><div><strong>Mult profissional</strong><small>Gerencie até 4 contas em uma interface</small></div></div>
 <div class="mini"><span class="icon">⏱️</span><div><strong>Teste grátis de 7 horas</strong><small>O tempo é controlado pelo aplicativo</small></div></div>
 <div class="mini"><span class="icon">🔐</span><div><strong>Licença por computador</strong><small>Trocas de PC exigem autorização</small></div></div>
-<hr style="border:0;border-top:1px solid #353b58;margin:26px 0"><p>Licença vitalícia</p><div class="price">R$ 29,90</div><p style="font-size:14px">Pagamento e download serão liberados quando a integração estiver concluída.</p></aside></div>
+<hr style="border:0;border-top:1px solid #353b58;margin:26px 0"><p>Licença vitalícia</p><div class="price">R$ 29,90</div><p style="font-size:14px">Pagamento e download serão liberados quando a integração estiver concluída.</p></aside></div></div>
 </div><script>
 const form=document.getElementById('requestForm'),notice=document.getElementById('notice'),btn=document.getElementById('submitBtn');
 form.addEventListener('submit',async e=>{e.preventDefault();btn.disabled=true;notice.classList.remove('show');try{
@@ -40,10 +41,15 @@ notice.textContent='Solicitação registrada! Aguarde a análise da administraç
 }catch(err){notice.textContent=err.message;notice.classList.add('show')}finally{btn.disabled=false}});
 
 const pe=document.getElementById('portalEmail'),pn=document.getElementById('portalNotice');
+const steps=['emailStep','verifyStep','loginStep','purchaseStep','welcome'];
+function showStep(step){steps.forEach(id=>document.getElementById(id).hidden=id!==step);pn.classList.remove('show')}
 function portalMsg(t){pn.textContent=t;pn.classList.add('show')}
 async function portalCall(path,data){const r=await fetch('/api/portal/'+path,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data),credentials:'same-origin'});const d=await r.json().catch(()=>({}));if(!r.ok)throw Error(typeof d.detail==='string'?d.detail:'Não foi possível concluir');return d}
-async function requestCode(){try{const d=await portalCall('request-code',{email:pe.value});if(d.next==='purchase'){portalMsg('Não encontramos uma licença vitalícia aprovada. Consulte a compra de R$ 29,90 ou fale com o suporte.');return}verifyBox.hidden=false;portalMsg('Enviamos um código ao seu e-mail.')}catch(e){portalMsg(e.message)}}
-async function createPassword(){try{await portalCall('create-password',{email:pe.value,code:portalCode.value,password:portalPassword.value});verifyBox.hidden=true;portalMsg('Senha criada. Agora entre usando sua senha.')}catch(e){portalMsg(e.message)}}
-async function login(){try{await portalCall('login',{email:pe.value,password:loginPassword.value});loginBox.hidden=true;checkBtn.hidden=true;welcome.hidden=false;welcomeTitle.textContent='Bem-vindo!';portalMsg('Acesso autorizado.')}catch(e){portalMsg(e.message)}}
+async function checkEmail(){try{if(!pe.value.trim()||!pe.checkValidity()){portalMsg('Digite um e-mail válido.');return}const d=await portalCall('check-email',{email:pe.value});showStep(d.next==='login'?'loginStep':d.next==='verify'?'verifyStep':'purchaseStep')}catch(e){portalMsg(e.message)}}
+function backToEmail(){showStep('emailStep')}
+async function sendCode(){try{const d=await portalCall('request-code',{email:pe.value});if(d.next==='purchase'){showStep('purchaseStep');return}codeFields.hidden=false;portalMsg('Código enviado. Confira seu e-mail.')}catch(e){portalMsg(e.message)}}
+async function createPassword(){try{await portalCall('create-password',{email:pe.value,code:portalCode.value,password:portalPassword.value});showStep('loginStep');portalMsg('Senha criada! Agora faça login.')}catch(e){portalMsg(e.message)}}
+async function login(){try{await portalCall('login',{email:pe.value,password:loginPassword.value});showStep('welcome');welcomeTitle.textContent='E-mail: '+pe.value.trim();memberArea.hidden=false;portalMsg('Login realizado.')}catch(e){portalMsg(e.message)}}
 async function logout(){await portalCall('logout',{});location.reload()}
+document.getElementById('portalEmail').addEventListener('keydown',e=>{if(e.key==='Enter')checkEmail()});
 </script></body></html>
