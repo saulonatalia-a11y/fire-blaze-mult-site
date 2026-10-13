@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Área do Cliente | FIRE BLAZE Mult</title>
+<style>
+:root{color-scheme:dark}*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 80% 0%,#282052,#0b0e1c 60%);color:#f7f6ff;font-family:Arial,sans-serif;min-height:100vh}
+.wrap{max-width:1080px;margin:auto;padding:28px 22px}header{display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #ffffff20;padding-bottom:24px}.logo{font-size:21px;font-weight:900;color:#b9a7ff}a{color:#c6baff;text-decoration:none}
+.hero{padding:58px 0 30px}h1{font-size:clamp(36px,6vw,57px);margin:0 0 14px}p{color:#b7bcd2;line-height:1.65}
+.grid{display:grid;grid-template-columns:1.15fr 1fr;gap:24px;margin-top:25px}.panel{background:#171b31;border:1px solid #333955;border-radius:20px;padding:30px;box-shadow:0 15px 50px #0003}
+h2{margin:0 0 12px;font-size:23px}label{display:block;font-size:14px;color:#b9bfd5;margin:20px 0 8px}input,select,textarea{width:100%;border:1px solid #414765;background:#0e1327;color:white;border-radius:11px;padding:15px;font:inherit}textarea{min-height:95px;resize:vertical}
+button{width:100%;background:linear-gradient(120deg,#7454f6,#a267ff);border:0;border-radius:12px;padding:16px;color:white;font-weight:bold;font-size:16px;cursor:pointer;margin-top:22px}button:disabled{opacity:.6;cursor:wait}
+.mini{display:flex;gap:14px;align-items:center;margin:18px 0}.icon{display:grid;place-items:center;background:#302752;border-radius:12px;width:45px;height:45px;flex-shrink:0}.mini strong{display:block}.mini small{display:block;color:#aeb4ce;margin-top:5px}
+.price{font-size:33px;font-weight:900;color:#c4b3ff}.notice{margin-top:16px;padding:12px;border-radius:9px;background:#262f4a;display:none}.notice.show{display:block}
+@media(max-width:760px){.grid{grid-template-columns:1fr}.hero{padding-top:35px}.panel{padding:22px}}
+</style></head>
+<body><div class="wrap"><header><div class="logo">🔥 FIRE BLAZE MULT</div><a href="/">← Voltar ao site</a></header>
+<section class="hero"><h1>Sua área do cliente</h1><p>Gerencie solicitações relacionadas ao seu FIRE BLAZE Mult em um único lugar.</p></section>
+<div class="grid"><section class="panel"><h2>Central de atendimento</h2><p>Solicite a troca de computador ou a exclusão da sua conta. Sua solicitação será analisada pela administração.</p>
+<form id="requestForm"><label for="email">E-mail cadastrado</label><input type="email" id="email" name="email" autocomplete="email" required placeholder="voce@exemplo.com">
+<label for="kind">O que você precisa?</label><select id="kind" name="kind"><option value="reset_pc">Liberar ou trocar computador</option><option value="delete_account">Solicitar exclusão de conta</option></select>
+<label for="note">Detalhes (opcional)</label><textarea id="note" name="note" maxlength="500" placeholder="Conte o que aconteceu..."></textarea>
+<button id="submitBtn" type="submit">Enviar solicitação</button><div class="notice" id="notice" role="status" aria-live="polite"></div></form>
+<p style="font-size:13px">Por segurança, a solicitação não altera automaticamente sua licença. A administração precisa confirmar a identidade antes de efetuar mudanças.</p></section>
+<aside class="panel"><h2>Seu FIRE BLAZE</h2><div class="mini"><span class="icon">🎮</span><div><strong>Mult profissional</strong><small>Gerencie até 4 contas em uma interface</small></div></div>
+<div class="mini"><span class="icon">⏱️</span><div><strong>Teste grátis de 7 horas</strong><small>O tempo é controlado pelo aplicativo</small></div></div>
+<div class="mini"><span class="icon">🔐</span><div><strong>Licença por computador</strong><small>Trocas de PC exigem autorização</small></div></div>
+<hr style="border:0;border-top:1px solid #353b58;margin:26px 0"><p>Licença vitalícia</p><div class="price">R$ 29,90</div><p style="font-size:14px">Pagamento e download serão liberados quando a integração estiver concluída.</p></aside></div>
+</div><script>
+const form=document.getElementById('requestForm'),notice=document.getElementById('notice'),btn=document.getElementById('submitBtn');
+form.addEventListener('submit',async e=>{e.preventDefault();btn.disabled=true;notice.classList.remove('show');try{
+const response=await fetch('/api/request',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:form.email.value.trim(),kind:form.kind.value,note:form.note.value.trim()})});
+if(!response.ok){const d=await response.json().catch(()=>({}));throw Error(d.detail==='Conta não encontrada'?'Não encontramos esse e-mail cadastrado. Verifique o endereço.':'Não foi possível registrar a solicitação. Tente novamente.')}
+notice.textContent='Solicitação registrada! Aguarde a análise da administração.';notice.classList.add('show');form.reset()
+}catch(err){notice.textContent=err.message;notice.classList.add('show')}finally{btn.disabled=false}});
+</script></body></html>
