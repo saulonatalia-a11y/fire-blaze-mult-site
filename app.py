@@ -136,8 +136,12 @@ def request_change(req:Request):
     u=user(c,req.email)
    if u['status']=='blocked':raise HTTPException(403,'Conta bloqueada; contate o suporte')
    if u['device_hash']!=req.device:
+    if u['status'] in ('lifetime','monthly'):
+     existing=c.execute("SELECT id FROM customer_requests WHERE customer_id=%s AND request_type='reset_pc' AND status='pending' LIMIT 1",(u['id'],)).fetchone()
+     if existing:c.execute('UPDATE customer_requests SET note=%s WHERE id=%s',('Novo dispositivo: '+req.device,existing['id']))
+     else:c.execute("INSERT INTO customer_requests(customer_id,request_type,note) VALUES(%s,'reset_pc',%s)",(u['id'],'Novo dispositivo: '+req.device))
+     return {'ok':True,'status':'pending_pc'}
     if not old:raise HTTPException(409,'Computador diferente do registrado. Contate o suporte.')
-    # Never silently move a lifetime license to a different device.
     note='Solicitação de recuperação: dispositivo informado '+req.device
    else:note='Solicitação de acesso vitalício'
    if u['status']=='lifetime' and u['device_hash']==req.device:return {'ok':True,'status':'lifetime'}
