@@ -147,6 +147,16 @@ def request_change(req:Request):
    c.execute('INSERT INTO customer_requests(customer_id,request_type,note) VALUES(%s,%s,%s)',(u['id'],'lifetime',note))
    return {'ok':True,'status':'pending'}
   if not u:raise HTTPException(404,'Conta não encontrada')
+  if req.kind=='reset_pc':
+   if u['status'] not in ('lifetime','monthly'):raise HTTPException(403,'Recuperação de PC disponível somente para licenças pagas')
+   if not req.device:raise HTTPException(400,'Identificador do novo computador obrigatório')
+   if u['device_hash']==req.device:return {'ok':True,'status':'already_registered'}
+   existing=c.execute("SELECT id FROM customer_requests WHERE customer_id=%s AND request_type='reset_pc' AND status='pending' LIMIT 1",(u['id'],)).fetchone()
+   if existing:
+    c.execute('UPDATE customer_requests SET note=%s WHERE id=%s',('Novo dispositivo: '+req.device,existing['id']))
+   else:
+    c.execute('INSERT INTO customer_requests(customer_id,request_type,note) VALUES(%s,%s,%s)',(u['id'],'reset_pc','Novo dispositivo: '+req.device))
+   return {'ok':True,'status':'pending'}
   c.execute('INSERT INTO customer_requests(customer_id,request_type,note) VALUES(%s,%s,%s)',(u['id'],req.kind,req.note[:500]))
  return {'ok':True,'status':'pending'}
 
@@ -208,6 +218,30 @@ def grant_30_days(req:Action,authorization:str|None=Header(None)):
   c.execute("UPDATE customer_requests SET status='approved' WHERE customer_id=%s AND status='pending' AND request_type='lifetime'",(u['id'],))
   audit(c,'grant_30_days',{'email':u['email']})
  return {'ok':True,'status':'monthly','days':30}
+
+@app.post('/api/admin/approve-pc')
+def approve_pc(req:Action,authorization:str|None=Header(None)):
+ auth(authorization)
+ with db() as c:
+  u=c.execute('SELECT * FROM customers WHERE email=%s FOR UPDATE',(str(req.email).lower(),)).fetchone()
+  if not u or u['status'] not in ('lifetime','monthly'):raise HTTPException(409,'Cliente sem licença paga ativa')
+  pending=c.execute("""SELECT id,note FROM customer_requests WHERE customer_id=%s
+   AND status='pending' AND request_type='reset_pc' ORDER BY id DESC LIMIT 1 FOR UPDATE""",(u['id'],)).fetchone()
+  if not pending or not pending['note'].startswith('Novo dispositivo: '):raise HTTPException(409,'Nenhuma solicitação válida de novo PC')
+  new_device=pending['note'][len('Novo dispositivo: '):].strip()
+  if len(new_device)<16 or len(new_device)>128:raise HTTPException(400,'Identificador de PC inválido')
+  other=c.execute('SELECT id FROM customers WHERE device_hash=%s AND id<>%s LIMIT 1',(new_device,u['id'])).fetchone()
+  if other:raise HTTPException(409,'Este PC já pertence a outro cadastro; contate o suporte')
+  if u['status']=='lifetime':
+   if key is None:raise HTTPException(503,'Assinatura de licenças não configurada')
+   payload=json.dumps({'product':'fire-blaze-mult','type':'lifetime','email':u['email'],'device':new_device,'issued':int(time.time()),'version':1},sort_keys=True,separators=(',',':')).encode()
+   token=base64.urlsafe_b64encode(payload).decode().rstrip('=')+'.'+base64.urlsafe_b64encode(key.sign(payload)).decode().rstrip('=')
+   c.execute('UPDATE licenses SET revoked_at=now() WHERE customer_id=%s AND revoked_at IS NULL',(u['id'],))
+   c.execute('INSERT INTO licenses(customer_id,device_hash,license_payload) VALUES(%s,%s,%s)',(u['id'],new_device,token))
+  c.execute('UPDATE customers SET device_hash=%s,last_heartbeat_at=NULL WHERE id=%s',(new_device,u['id']))
+  c.execute("UPDATE customer_requests SET status='approved' WHERE id=%s",(pending['id'],))
+  audit(c,'approve_pc',{'email':u['email'],'status':u['status']})
+ return {'ok':True,'status':u['status']}
 
 @app.post('/api/admin/reset-pc')
 def reset(req:Action,authorization:str|None=Header(None)):
