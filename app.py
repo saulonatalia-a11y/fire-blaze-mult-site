@@ -94,6 +94,23 @@ def heartbeat(req:Start):
   status='trial' if left else 'expired'
   c.execute('UPDATE customers SET trial_seconds_remaining=%s,last_heartbeat_at=to_timestamp(%s),status=%s WHERE id=%s',(left,now,status,u['id']))
   return {'status':status,'remaining_seconds':left,'license':None}
+@app.post('/api/access-check')
+def access_check(req:Start):
+ if not req.email:raise HTTPException(422,'Informe o e-mail')
+ with db() as c:
+  u=user(c,req.email)
+  if u and u['device_hash']==req.device:
+   if u['status']=='lifetime':return {'action':'enter','status':'lifetime'}
+   if u['status']=='monthly' and u['access_expires_at'] and u['access_expires_at'].timestamp()>time.time():return {'action':'enter','status':'monthly'}
+   if u['status']=='trial' and u['trial_seconds_remaining']>0:return {'action':'enter','status':'trial','remaining_seconds':u['trial_seconds_remaining']}
+   if u['status']=='blocked':return {'action':'support','status':'blocked'}
+  if u and u['device_hash']!=req.device and u['status'] in ('lifetime','monthly'):return {'action':'support','status':'different_device'}
+  legacy=c.execute("""SELECT 1 FROM legacy_imports WHERE lower(email)=lower(%s)
+    AND original_plan='lifetime' AND original_status='active'
+    AND (expires_at IS NULL OR expires_at>now()) LIMIT 1""",(str(req.email),)).fetchone()
+  if legacy:return {'action':'request_access','status':'legacy'}
+  return {'action':'purchase','status':'expired' if u else 'not_registered'}
+
 @app.post('/api/request')
 def request_change(req:Request):
  if req.kind not in ('reset_pc','delete_account','lifetime'):raise HTTPException(400,'Pedido inválido')
@@ -106,7 +123,7 @@ def request_change(req:Request):
     AND (expires_at IS NULL OR expires_at>now()) LIMIT 1""",(str(req.email),)).fetchone()
    if not u:
     taken=c.execute('SELECT id FROM customers WHERE device_hash=%s LIMIT 1',(req.device,)).fetchone()
-    if taken and not old:raise HTTPException(409,'Teste já utilizado neste PC')
+    if taken and not old:raise HTTPException(409,'Este computador já possui cadastro. Entre com o e-mail do teste para solicitar uma licença.')
     # An old lifetime record is only a claim, not authorization. No new free trial.
     if taken:
      c.execute("""INSERT INTO customers(email,device_hash,status,trial_seconds_remaining)
