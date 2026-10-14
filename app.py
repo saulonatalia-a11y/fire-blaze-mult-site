@@ -181,7 +181,9 @@ def grant(req:Action,authorization:str|None=Header(None)):
   token=base64.urlsafe_b64encode(payload).decode().rstrip('=')+'.'+base64.urlsafe_b64encode(key.sign(payload)).decode().rstrip('=')
   c.execute('UPDATE licenses SET revoked_at=now() WHERE customer_id=%s AND revoked_at IS NULL',(u['id'],))
   c.execute('INSERT INTO licenses(customer_id,device_hash,license_payload) VALUES(%s,%s,%s)',(u['id'],u['device_hash'],token))
-  c.execute("UPDATE customers SET status='lifetime' WHERE id=%s",(u['id'],));audit(c,'grant',{'email':u['email']})
+  c.execute("UPDATE customers SET status='lifetime' WHERE id=%s",(u['id'],))
+  c.execute("UPDATE customer_requests SET status='approved' WHERE customer_id=%s AND status='pending' AND request_type='lifetime'",(u['id'],))
+  audit(c,'grant',{'email':u['email']})
  return {'ok':True}
 @app.post('/api/admin/grant-30-days')
 def grant_30_days(req:Action,authorization:str|None=Header(None)):
@@ -192,6 +194,7 @@ def grant_30_days(req:Action,authorization:str|None=Header(None)):
   if u['status']=='lifetime':raise HTTPException(409,'Cliente já possui vitalício; não será substituído')
   c.execute("""UPDATE customers SET status='monthly',access_expires_at=now()+interval '30 days',
     last_heartbeat_at=NULL WHERE id=%s""",(u['id'],))
+  c.execute("UPDATE customer_requests SET status='approved' WHERE customer_id=%s AND status='pending' AND request_type='lifetime'",(u['id'],))
   audit(c,'grant_30_days',{'email':u['email']})
  return {'ok':True,'status':'monthly','days':30}
 
