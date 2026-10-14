@@ -34,7 +34,7 @@ def auth(a):
 def user(c,e):return c.execute('SELECT * FROM customers WHERE email=%s',(str(e).lower(),)).fetchone()
 def result(c,u):
  lic=c.execute('SELECT license_payload FROM licenses WHERE customer_id=%s AND revoked_at IS NULL ORDER BY id DESC LIMIT 1',(u['id'],)).fetchone()
- return {'status':u['status'],'remaining_seconds':u['trial_seconds_remaining'],'license':lic['license_payload'] if lic else None}
+ return {'status':u['status'],'remaining_seconds':u['trial_seconds_remaining'],'license':lic['license_payload'] if lic else None,'expires_at':u.get('access_expires_at').isoformat() if u.get('access_expires_at') else None}
 def audit(c,a,d):c.execute('INSERT INTO audit_events(action,details) VALUES(%s,%s::jsonb)',(a,json.dumps(d)))
 @app.get('/api/health')
 def health():
@@ -45,7 +45,6 @@ def config():
  with db() as c:r=c.execute("SELECT value FROM app_settings WHERE key='lifetime_price_brl'").fetchone()
  return {'price':r['value'] if r else '29.90','trial_hours':7,'public_key':public}
 def trial_user(c,req,lock=False):
- # A trial is identified by the device, never by a user-supplied email.
  suffix=' FOR UPDATE' if lock else ''
  return c.execute('SELECT * FROM customers WHERE device_hash=%s ORDER BY id ASC LIMIT 1'+suffix,(req.device,)).fetchone()
 @app.post('/api/start')
@@ -54,15 +53,21 @@ def start(req:Start):
   if req.email:
    u=user(c,req.email)
    if not u:
-    if trial_user(c,req):raise HTTPException(403,'Teste já utilizado neste PC')
-    c.execute('INSERT INTO customers(email,device_hash) VALUES(%s,%s)',(str(req.email).lower(),req.device))
-    u=user(c,req.email)
+    existing=trial_user(c,req,lock=True)
+    if existing:
+     if existing['email'].endswith('@device.fireblaze.invalid'):
+      c.execute('UPDATE customers SET email=%s WHERE id=%s',(str(req.email).lower(),existing['id']))
+      u=user(c,req.email)
+     else:
+      raise HTTPException(409,'Este PC já possui cadastro. Use o e-mail registrado ou solicite recuperação.')
+    else:
+     c.execute('INSERT INTO customers(email,device_hash) VALUES(%s,%s)',(str(req.email).lower(),req.device))
+     u=user(c,req.email)
    if u['device_hash']!=req.device or u['status']=='blocked':raise HTTPException(403,'PC não autorizado')
   else:
    u=trial_user(c,req)
    if not u:
-    # Internal, deterministic identifier; reinstalling does not reset the trial.
-    internal='trial-'+hashlib.sha256(req.device.encode()).hexdigest()+'@device.fireblaze.invalid'
+    internal='trial-'+hashlib.sha256(req.device.encode()).hexdigest()[:32]+'@device.fireblaze.invalid'
     c.execute('INSERT INTO customers(email,device_hash) VALUES(%s,%s) ON CONFLICT(email) DO NOTHING',(internal,req.device))
     u=trial_user(c,req)
    if not u or u['status']=='blocked':raise HTTPException(403,'PC não autorizado')
@@ -71,12 +76,14 @@ def start(req:Start):
 def heartbeat(req:Start):
  now=int(time.time())
  with db() as c:
-  if req.email:
-   u=c.execute('SELECT * FROM customers WHERE email=%s FOR UPDATE',(str(req.email).lower(),)).fetchone()
-  else:
-   u=trial_user(c,req,lock=True)
+  if req.email:u=c.execute('SELECT * FROM customers WHERE email=%s FOR UPDATE',(str(req.email).lower(),)).fetchone()
+  else:u=trial_user(c,req,lock=True)
   if not u or u['device_hash']!=req.device or u['status']=='blocked':raise HTTPException(403,'Não autorizado')
   if u['status']=='lifetime':return result(c,u)
+  if u['status']=='monthly':
+   if u['access_expires_at'] and u['access_expires_at'].timestamp()>now:return result(c,u)
+   c.execute("UPDATE customers SET status='expired' WHERE id=%s",(u['id'],))
+   raise HTTPException(403,'Licença de 30 dias expirada')
   if u['status']=='expired' or u['trial_seconds_remaining']<=0:raise HTTPException(403,'Teste expirado')
   last=int(u['last_heartbeat_at'].timestamp()) if u['last_heartbeat_at'] else None
   elapsed=min(65,max(0,now-last)) if last else 0
@@ -124,7 +131,7 @@ def request_change(req:Request):
 def dashboard(authorization:str|None=Header(None)):
  auth(authorization)
  with db() as c:
-  users=c.execute('SELECT id,email,device_hash AS device,trial_seconds_remaining AS trial_seconds,status FROM customers ORDER BY id DESC').fetchall()
+  users=c.execute('SELECT id,email,device_hash AS device,trial_seconds_remaining AS trial_seconds,status,access_expires_at,created_at FROM customers ORDER BY id DESC').fetchall()
   requests=c.execute('SELECT r.id,r.request_type AS kind,r.note,r.status,c.email FROM customer_requests r JOIN customers c ON c.id=r.customer_id ORDER BY r.id DESC LIMIT 100').fetchall()
  return {'users':users,'requests':requests}
 @app.post('/api/admin/grant')
@@ -140,6 +147,18 @@ def grant(req:Action,authorization:str|None=Header(None)):
   c.execute('INSERT INTO licenses(customer_id,device_hash,license_payload) VALUES(%s,%s,%s)',(u['id'],u['device_hash'],token))
   c.execute("UPDATE customers SET status='lifetime' WHERE id=%s",(u['id'],));audit(c,'grant',{'email':u['email']})
  return {'ok':True}
+@app.post('/api/admin/grant-30-days')
+def grant_30_days(req:Action,authorization:str|None=Header(None)):
+ auth(authorization)
+ with db() as c:
+  u=user(c,req.email)
+  if not u or not u['device_hash']:raise HTTPException(404,'Cliente sem computador registrado')
+  if u['status']=='lifetime':raise HTTPException(409,'Cliente já possui vitalício; não será substituído')
+  c.execute("""UPDATE customers SET status='monthly',access_expires_at=now()+interval '30 days',
+    last_heartbeat_at=NULL WHERE id=%s""",(u['id'],))
+  audit(c,'grant_30_days',{'email':u['email']})
+ return {'ok':True,'status':'monthly','days':30}
+
 @app.post('/api/admin/reset-pc')
 def reset(req:Action,authorization:str|None=Header(None)):
  auth(authorization)
