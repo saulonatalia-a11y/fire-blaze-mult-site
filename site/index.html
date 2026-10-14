@@ -8,4 +8,28 @@ h1{font-size:clamp(32px,2.7vw,42px);font-weight:950;font-style:italic;text-trans
 .download{display:flex;align-items:center;justify-content:center;text-align:center;min-height:84px;padding:20px;background:linear-gradient(120deg,#a13cf7,#6531e5);border-radius:14px;color:white;text-decoration:none;font-size:clamp(18px,1.6vw,22px);font-weight:900;box-shadow:0 9px 32px #8734ed66;transition:filter .2s,transform .2s}
 .download:hover{filter:brightness(1.15);transform:translateY(-2px)}
 @media(max-width:600px){main{align-items:flex-end;justify-content:center;padding:20px 16px 38px}.client{min-height:430px;padding:90px 20px 32px}.gengar-icon{width:78px;height:78px}}
-</style></head><body><main><section class="client" aria-label="Área do Cliente"><span class="gengar-icon" aria-hidden="true"><i></i></span><h1>ÁREA <span>DO CLIENTE</span></h1><p>Baixe o FIRE BLAZE Mult para Windows. O teste gratuito, a compra e a validação da licença são feitos dentro do aplicativo.</p><a class="download" href="https://github.com/saulonatalia-a11y/fire-blaze-mult-site/releases" rel="noopener noreferrer">⬇ BAIXAR FIRE BLAZE MULT</a><p class="fineprint">Windows • 7 horas de teste grátis • Licença vitalícia R$ 29,90</p></section></main></body></html>
+</style></head><body><main><section class="client" aria-label="Área do Cliente"><span class="gengar-icon" aria-hidden="true"><i></i></span><h1>ÁREA <span>DO CLIENTE</span></h1><p>Baixe o FIRE BLAZE Mult para Windows. O teste gratuito, a compra e a validação da licença são feitos dentro do aplicativo.</p><a class="download" href="https://github.com/saulonatalia-a11y/fire-blaze-mult-site/releases/tag/fire-blaze-mult-v1.0.0" id="downloadBtn">⬇ BAIXAR FIRE BLAZE MULT</a><p class="fineprint">Windows • 7 horas de teste grátis • Licença vitalícia R$ 29,90</p></section></main><script>
+const downloadBtn=document.getElementById('downloadBtn');
+downloadBtn.addEventListener('click',async function(event){
+  event.preventDefault();
+  const label=downloadBtn.textContent;
+  downloadBtn.textContent='PROCURANDO INSTALADOR...';
+  downloadBtn.style.pointerEvents='none';
+  try{
+    const api='https://api.github.com/repos/saulonatalia-a11y/fire-blaze-mult-site/releases/tags/fire-blaze-mult-v1.0.0';
+    const response=await fetch(api,{headers:{Accept:'application/vnd.github+json'}});
+    if(!response.ok)throw new Error('Release não encontrado');
+    const release=await response.json();
+    const files=Array.isArray(release.assets)?release.assets:[];
+    const installer=files.find(f=>/FIRE.BLAZE.MULT.*(?:setup|instalador).*\.exe$/i.test(f.name))||files.find(f=>/\.exe$/i.test(f.name));
+    if(!installer?.browser_download_url)throw new Error('Instalador não encontrado neste Release');
+    window.location.assign(installer.browser_download_url);
+  }catch(error){
+    alert('Não foi possível iniciar o download automático. Confira o instalador na página do Release.');
+    window.location.assign('https://github.com/saulonatalia-a11y/fire-blaze-mult-site/releases/tag/fire-blaze-mult-v1.0.0');
+  }finally{
+    downloadBtn.textContent=label;
+    downloadBtn.style.pointerEvents='';
+  }
+});
+</script></body></html>
