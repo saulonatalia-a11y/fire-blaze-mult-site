@@ -109,7 +109,7 @@ def access_check(req:Start):
    if u['status']=='blocked':return {'action':'support','status':'blocked'}
   if u and u['device_hash']!=req.device and u['status'] in ('lifetime','monthly'):return {'action':'support','status':'different_device'}
   legacy=c.execute("""SELECT 1 FROM legacy_imports WHERE lower(email)=lower(%s)
-    AND original_plan='lifetime' AND original_status='active'
+    AND original_plan IN ('lifetime','monthly') AND original_status='active'
     AND (expires_at IS NULL OR expires_at>now()) LIMIT 1""",(str(req.email),)).fetchone()
   if legacy:return {'action':'request_access','status':'legacy'}
   return {'action':'purchase','status':'expired' if u else 'not_registered'}
@@ -122,7 +122,7 @@ def request_change(req:Request):
   if req.kind=='lifetime':
    if not req.device:raise HTTPException(400,'Identificação do computador obrigatória')
    old=c.execute("""SELECT 1 FROM legacy_imports WHERE lower(email)=lower(%s)
-    AND original_plan='lifetime' AND original_status='active'
+    AND original_plan IN ('lifetime','monthly') AND original_status='active'
     AND (expires_at IS NULL OR expires_at>now()) LIMIT 1""",(str(req.email),)).fetchone()
    if not u:
     taken=c.execute('SELECT id FROM customers WHERE device_hash=%s LIMIT 1',(req.device,)).fetchone()
@@ -157,7 +157,16 @@ def dashboard(authorization:str|None=Header(None)):
   users=c.execute('SELECT id,email,device_hash AS device,trial_seconds_remaining AS trial_seconds,status,access_expires_at,created_at FROM customers ORDER BY id DESC').fetchall()
   requests=c.execute("""SELECT r.id,r.request_type AS kind,r.note,
   CASE WHEN r.status='pending' AND r.request_type='lifetime' AND c.status IN ('lifetime','monthly') THEN 'approved' ELSE r.status END AS status,
-  c.email FROM customer_requests r JOIN customers c ON c.id=r.customer_id ORDER BY r.id DESC LIMIT 100""").fetchall()
+  c.email,
+  (SELECT li.original_plan FROM legacy_imports li
+   WHERE lower(li.email)=lower(c.email) AND li.original_plan IN ('lifetime','monthly')
+   AND li.original_status='active' AND (li.expires_at IS NULL OR li.expires_at>now())
+   ORDER BY CASE WHEN li.original_plan='lifetime' THEN 0 ELSE 1 END,li.expires_at DESC NULLS FIRST LIMIT 1) AS legacy_plan,
+  (SELECT li.expires_at FROM legacy_imports li
+   WHERE lower(li.email)=lower(c.email) AND li.original_plan IN ('lifetime','monthly')
+   AND li.original_status='active' AND (li.expires_at IS NULL OR li.expires_at>now())
+   ORDER BY CASE WHEN li.original_plan='lifetime' THEN 0 ELSE 1 END,li.expires_at DESC NULLS FIRST LIMIT 1) AS legacy_expires_at
+  FROM customer_requests r JOIN customers c ON c.id=r.customer_id ORDER BY r.id DESC LIMIT 100""").fetchall()
  return {'users':users,'requests':requests}
 @app.post('/api/admin/adjust-trial')
 def adjust_trial(req:AdjustTrial,authorization:str|None=Header(None)):
