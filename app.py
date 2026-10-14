@@ -21,6 +21,9 @@ def db():
 class Start(BaseModel):
  email:EmailStr|None=None
  device:str=Field(min_length=16,max_length=128)
+class AdjustTrial(BaseModel):
+ email:EmailStr
+ minutes:int=Field(ge=0,le=43200)
 class Action(BaseModel):
  email:EmailStr
  device:str|None=None
@@ -134,6 +137,19 @@ def dashboard(authorization:str|None=Header(None)):
   users=c.execute('SELECT id,email,device_hash AS device,trial_seconds_remaining AS trial_seconds,status,access_expires_at,created_at FROM customers ORDER BY id DESC').fetchall()
   requests=c.execute('SELECT r.id,r.request_type AS kind,r.note,r.status,c.email FROM customer_requests r JOIN customers c ON c.id=r.customer_id ORDER BY r.id DESC LIMIT 100').fetchall()
  return {'users':users,'requests':requests}
+@app.post('/api/admin/adjust-trial')
+def adjust_trial(req:AdjustTrial,authorization:str|None=Header(None)):
+ auth(authorization)
+ with db() as c:
+  u=c.execute('SELECT * FROM customers WHERE email=%s FOR UPDATE',(str(req.email).lower(),)).fetchone()
+  if not u:raise HTTPException(404,'Cliente não encontrado')
+  if u['status'] in ('lifetime','monthly','blocked'):raise HTTPException(409,'Ajuste permitido somente para clientes em teste ou com teste expirado')
+  before=u['trial_seconds_remaining']
+  seconds=req.minutes*60
+  status='trial' if seconds>0 else 'expired'
+  c.execute('UPDATE customers SET trial_seconds_remaining=%s,status=%s,last_heartbeat_at=NULL WHERE id=%s',(seconds,status,u['id']))
+  audit(c,'adjust_trial',{'email':u['email'],'previous_seconds':before,'new_seconds':seconds})
+ return {'ok':True,'status':status,'remaining_seconds':seconds}
 @app.post('/api/admin/grant')
 def grant(req:Action,authorization:str|None=Header(None)):
  auth(authorization)
