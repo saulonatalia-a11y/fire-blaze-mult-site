@@ -8,11 +8,14 @@ from pydantic import BaseModel,EmailStr,Field
 import psycopg
 from psycopg.rows import dict_row
 from cryptography.hazmat.primitives import serialization
+from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey
 DATABASE_URL=os.environ['DATABASE_URL']
 ADMIN_PASSWORD=os.environ['FIRE_ADMIN_PASSWORD']
 key=None
 if os.environ.get('FIRE_SIGNING_KEY_B64'):
- key=serialization.load_pem_private_key(base64.b64decode(os.environ['FIRE_SIGNING_KEY_B64']),password=None)
+ key_bytes=base64.b64decode(os.environ['FIRE_SIGNING_KEY_B64'].strip(),validate=True)
+ key=Ed25519PrivateKey.from_private_bytes(key_bytes) if len(key_bytes)==32 else serialization.load_pem_private_key(key_bytes,password=None)
+ if not isinstance(key,Ed25519PrivateKey):raise ValueError('FIRE_SIGNING_KEY_B64 must contain an Ed25519 private key')
 public=base64.b64encode(key.public_key().public_bytes(serialization.Encoding.Raw,serialization.PublicFormat.Raw)).decode() if key else None
 app=FastAPI(title="FIRE BLAZE Mult")
 @contextmanager
